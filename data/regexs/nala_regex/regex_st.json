@@ -1,0 +1,5 @@
+[
+  "\\w+: del [ACTGRNDEQHILKMFPSWYV] -?\\d+\\.\\.\\.-?\\d+",
+  "\\d+.*[ACTGRNDEQHILKMFPSWYV] --> [ACTGRNDEQHILKMFPSWYV]",
+  "[cgp]\\. ?\\d+ ?[ACTGRNDEQHILKMFPSWYV]>[ACTGRNDEQHILKMFPSWYV]"
+]

@@ -1,0 +1,8 @@
+([cgrm]\.[ATCGUatcgu\/<>?();:-_+*0-9]+(inv|del|ins|dup|tri|qua|con|delins|indel)[ATCGUatcgu0-9_.:]*)
+(IVS[ATCGUatcgu\/<>?();:-_+*0-9]+(del|ins|dup|tri|qua|con|delins|indel)[ATCGUatcgu0-9_.:]*)
+([cgrm]\.[ATCGUatcgu\\/<>?();:-_+*0-9]+)()
+(IVS[ATCGUatcgu\/<>?();:-_+*0-9]+)()
+([cgrm]\.[ATCGUatcgu][0-9]+[ATCGUatcgu])()
+([ATCGUatcgu][0-9]+[ATCGUatcgu])()
+([0-9]+(del|ins|dup|tri|qua|con|delins|indel)[ATCGU]*)
+(Delta[0-9]+)()
