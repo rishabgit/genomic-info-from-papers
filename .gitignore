@@ -20,3 +20,10 @@ data/regexs/tmvar_regex/RegEx.MF
 data/regexs/tmvar_regex/SplitComponent.txt
 utils/all_config.cfg
 models/nala
+data/nala
+data/gsoc/proteinfa/c_elegans.PRJNA13758.WS281.annotations.gff3
+data/model_output/extracted_snippets.csv
+data/model_output/results.npy
+data/wbpapers
+data/model_output/extracted_snippets_1.csv
+data/model_output/extracted_snippets_2.csv

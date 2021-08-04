@@ -98,7 +98,7 @@ def wbtools_paper_text(wbpid, db_name, db_user, db_password, db_host, ssh_host,\
     return sentences
 
 
-def get_paper_sentences(wbpids, config_path, store_ppr_path):
+def get_paper_sentences(wbpids, config, store_ppr_path):
     '''
     Takes WB Paper IDs and returns a list of sentences from those papers after filtering
     Arg:
@@ -110,7 +110,7 @@ def get_paper_sentences(wbpids, config_path, store_ppr_path):
     paperid_sentence_list: List of paper ID and sentence
         e.g. [['WBPaper00002379', 'First sentence'], ['WBPaper00002379', 'Second sentence'], ....]
     '''
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(nltk.corpus.stopwords.words('english'))
     stop_words = [w for w in stop_words if len(w) > 1]
 
     all_special_chars = []
@@ -123,9 +123,7 @@ def get_paper_sentences(wbpids, config_path, store_ppr_path):
     # list of special characters to keep during inference
     # helps with clearing out the bad characters from old papers
     all_special_chars = list(set(all_special_chars))
-
-    config = configparser.ConfigParser()
-    config.read(config_path)
+    
     token = config['textpresso']['token']
     db_name=config['wb_database']['db_name']
     db_user=config['wb_database']['db_user']
@@ -147,7 +145,7 @@ def get_paper_sentences(wbpids, config_path, store_ppr_path):
         # deals with empty text files with only "0"
         if len(txt) == 2:
             if platform.system() != 'Windows':
-                txt = wbtools_paper_text(id[7:], db_name, db_user, db_password, db_host, ssh_host,\
+                txt = wbtools_paper_text(id, db_name, db_user, db_password, db_host, ssh_host,\
                     ssh_user, ssh_passwd)
             elif temp_paperid_sentence.size != 0:
                 txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
@@ -155,7 +153,7 @@ def get_paper_sentences(wbpids, config_path, store_ppr_path):
         for row in txt: 
             if row.find('fifi') == -1:
                 if platform.system() != 'Windows':
-                    txt = wbtools_paper_text(id[7:], db_name, db_user, db_password, db_host, ssh_host,\
+                    txt = wbtools_paper_text(id, db_name, db_user, db_password, db_host, ssh_host,\
                         ssh_user, ssh_passwd)
                 elif temp_paperid_sentence.size != 0:
                     txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
