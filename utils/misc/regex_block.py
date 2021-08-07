@@ -360,7 +360,7 @@ class BOWdictionary:
     
     
 class CustomWBregex:
-    def __init__(self, db_config, locus_only=False, folder_path='data/gsoc/wbtools'):
+    def __init__(self, db_config, extra_regex=False,locus_only=False, folder_path='data/gsoc/wbtools'):
         
         if not set(os.listdir(folder_path)) >= set(['wb_alleles_variations.npy', 'wb_allele_designations.npy', 'all_gene_names.npy']):
 
@@ -392,11 +392,11 @@ class CustomWBregex:
             
         OPENING_CLOSING_REGEXES = [r'(', r')']
         wb_genes = np.load(folder_path +'/all_gene_names.npy')
-        all_genes = Path(folder_path +'/genes.txt').read_text().split('\n')
-        for g in wb_genes: all_genes.append(g)
-        all_genes = [g for g in all_genes if len(g) > 1]
-        all_genes = list(set(all_genes))
-        all_genes = OPENING_CLOSING_REGEXES[0] + '|'.join(all_genes) + OPENING_CLOSING_REGEXES[1]
+        all_genes_list = Path(folder_path +'/genes.txt').read_text().split('\n')
+        for g in wb_genes: all_genes_list.append(g)
+        all_genes_list = [g for g in all_genes_list if len(g) > 1]
+        all_genes_list = list(set(all_genes_list))
+        all_genes = OPENING_CLOSING_REGEXES[0] + '|'.join(all_genes_list) + OPENING_CLOSING_REGEXES[1]
 
         # the allele regex and db idea was stolen from wbtools
         allele_designations = np.load(folder_path +'/wb_allele_designations.npy').astype('U6')
@@ -418,8 +418,6 @@ class CustomWBregex:
             all_genes + r'[^A-Za-z]{0,2}' + all_var + r'[^A-Za-z]',
             ]
 
-        self._gene_var_regex = [re.compile(r,re.IGNORECASE) for r in gene_var_combo]
-
         # these regexes were written after manually looking at the curator remarks
         raw_regexs = [\
             '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX]) *(\(?[1-9][0-9]*\)?)(?: *-*> *| +(in|to|into|for|of|by|with|at))? +(either +)?((an|a) +)?( *NONSENSE +)?(TERM|STOP|AMBER|OCHRE|OPAL|UMBER)',\
@@ -437,7 +435,19 @@ class CustomWBregex:
             self._regular_expressions = [re.compile(r,re.IGNORECASE) for r in extra_locus_only_regexs]
         else:
             self._regular_expressions = [re.compile(r,re.IGNORECASE) for r in raw_regexs + variation_regex]
+        
+        if extra_regex:
+            self._gene_var_regex = [re.compile(r,re.IGNORECASE) for r in gene_var_combo]
+            
+            # repeating same set of regex is definitely not efficient
+            # self._gene_var_regex and the regex below can be easily combined
+            # TODO: combine
+            OPENING_CLOSING_REGEXES = [r'((?:^|[\s\(\[\'"/,;\-])', r'(?:^|[\s\(\[\'"/,;\-]))']
+            all_genes = OPENING_CLOSING_REGEXES[0] + '|'.join(all_genes_list) + OPENING_CLOSING_REGEXES[1]
+            self._all_genes = [re.compile(r,re.IGNORECASE) for r in [all_genes]]
+            
 
+            
     def __call__(self, text, span_size=150):
         final_list = []
         for regex in self._regular_expressions:      
@@ -452,6 +462,7 @@ class CustomWBregex:
 
         return final_list
 
+    
     def var_and_gene_close(self, text, span_size=150):
         final_list = []
         for regex in self._gene_var_regex:      
@@ -463,6 +474,19 @@ class CustomWBregex:
                 raw_mut = raw_mut[1:] if not raw_mut[0].isalnum() else raw_mut
                 raw_mut = raw_mut[:-1] if not raw_mut[-1].isalnum() else raw_mut
                 final_list.append([raw_mut.strip(), 'Gene & Variant'])
+        return final_list
+    
+    
+    def get_genes(self, text):
+        final_list = []
+        for regex in self._all_genes:      
+            for m in regex.finditer(text):
+                span = (m.start(0), m.end(0))    
+                raw = (text[span[0]:span[1]]).strip()
+                raw = raw[1:] if not raw[0].isalnum() else raw
+                raw = raw[:-1] if not raw[-1].isalnum() else raw
+                if len(raw.strip()) > 1:
+                    final_list.append([raw.strip(), 'Just gene'])
         return final_list
     
     

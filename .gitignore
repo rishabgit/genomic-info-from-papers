@@ -27,3 +27,5 @@ data/model_output/results.npy
 data/wbpapers
 data/model_output/extracted_snippets_1.csv
 data/model_output/extracted_snippets_2.csv
+data/model_output/final_matches.csv
+data/id_and_sentence.csv
