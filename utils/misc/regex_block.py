@@ -497,6 +497,26 @@ class CustomWBregex:
 # any valid identity which is passed in will be a key in this dict,
 # and it avoids having to analyze which format the input residue
 # was passed in as.
+# little modified from the ones at top of this file
+amino_acid_three_to_one_letter_map = \
+    dict([('ALA','A'),('GLY','G'),('LEU','L'),('MET','M'),\
+     ('PHE','F'),('TRP','W'),('LYS','K'),('GLN','Q'),('GLU','E'),('SER','S'),\
+     ('PRO','P'),('VAL','V'),('ILE','I'),('CYS','C'),('TYR','Y'),('HIS','H'),\
+     ('ARG','R'),('ASN','N'),('ASP','D'),('THR','T'),('XAA','X'),('GLX','Z'),\
+     ('ASX','B'), ('TER', 'X'), ('STP', 'X')])
+
+# A dictionary mapping amino acid names to their one-letter abbreviations
+amino_acid_name_to_one_letter_map = \
+    dict([('ALANINE','A'),('GLYCINE','G'),('LEUCINE','L'),\
+     ('METHIONINE','M'),('PHENYLALANINE','F'),('TRYPTOPHAN','W'),\
+     ('LYSINE','K'),('GLUTAMINE','Q'),('GLUTAMIC','E'),\
+     ('GLUTAMATE','E'),('ASPARTATE','D'),('SERINE','S'),\
+     ('PROLINE','P'),('VALINE','V'),('ISOLEUCINE','I'),('CYSTEINE','C'),\
+     ('TYROSINE','Y'),('HISTIDINE','H'),('ARGININE','R'),\
+     ('ASPARAGINE','N'),('ASPARTIC','D'),('THREONINE','T'), \
+     ('OCHRE', 'X'), ('AMBER', 'X'), ('OPAL', 'X'), ('UMBER', 'X'), \
+     ('STOP', 'X'), ('TERM', 'X'), ('*', '*')])
+
 amino_dict = dict(zip(list('ABCDEFGHIKLMNPQRSTVWXYZ'),
                                 list('ABCDEFGHIKLMNPQRSTVWXYZ')))
 amino_dict.update(amino_acid_three_to_one_letter_map)
@@ -504,7 +524,8 @@ amino_dict.update(amino_acid_name_to_one_letter_map)
 
 def normalize_mutations(mutation):
     norm_regex_patterns = [\
-        "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]*(?P<pos>[1-9][0-9]+)(?:| +(in|to|into|for|of|by|with|at) +(either +)?((an|a) +)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)",\
+        "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]*(?P<pos>[1-9][0-9]+)(?:|( +[A-Za-z\s]*)? +(in|to|into|for|of|by|with|at) +(either +)?((an|a) +)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)",\
+        "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9\s]*(?:| *(in|to|into|for|of|by|with|at) *(either +)?((an|a) +)?([^A-Za-z0-9]*)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)(( +.* +)|[^A-Za-z0-9]*)(?P<pos>[1-9][0-9]+)",\
         "(?P<pos>[1-9][0-9]+)[^A-Za-z0-9]*(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]+(?P<mut_res>[A-Za-z]+)",\
         "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]+(?P<mut_res>[A-Za-z]+)[^A-Za-z0-9]*(?P<pos>[1-9][0-9]+)",\
             ]
