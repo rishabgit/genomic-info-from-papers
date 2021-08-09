@@ -526,8 +526,9 @@ def normalize_mutations(mutation):
     norm_regex_patterns = [\
         "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]*(?P<pos>[1-9][0-9]+)(?:|( +[A-Za-z\s]*)? +(in|to|into|for|of|by|with|at) +(either +)?((an|a) +)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)",\
         "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9\s]*(?:| *(in|to|into|for|of|by|with|at) *(either +)?((an|a) +)?([^A-Za-z0-9]*)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)(( +.* +)|[^A-Za-z0-9]*)(?P<pos>[1-9][0-9]+)",\
-        "(?P<pos>[1-9][0-9]+)[^A-Za-z0-9]*(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]+(?P<mut_res>[A-Za-z]+)",\
         "(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]+(?P<mut_res>[A-Za-z]+)[^A-Za-z0-9]*(?P<pos>[1-9][0-9]+)",\
+        "(?P<pos>[1-9][0-9]+)[^A-Za-z0-9]*(?P<wt_res>[A-Za-z]+)(?:| *(in|to|into|for|of|by|with|at) *(either +)?((an|a) +)?([^A-Za-z0-9]*)?|[^A-Za-z0-9]*)(?P<mut_res>[A-Za-z]+)",\
+        "(?P<pos>[1-9][0-9]+)[^A-Za-z0-9]*(?P<wt_res>[A-Za-z]+)[^A-Za-z0-9]+(?P<mut_res>[A-Za-z]+)",\
             ]
     normalized_mutations = []
     norm_regex = [re.compile(r,re.IGNORECASE) for r in norm_regex_patterns]
