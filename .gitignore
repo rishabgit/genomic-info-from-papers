@@ -27,3 +27,5 @@ data/id_and_sentence.csv
 data/model_output/processed/snippets_1.csv
 data/model_output/processed/snippets_2.csv
 data/model_output/processed/snippets_3.csv
+data/model_output/processed/final_A.csv
+data/model_output/processed/final_B.csv

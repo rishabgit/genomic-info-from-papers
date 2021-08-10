@@ -6,278 +6,43 @@ from pathlib import Path
 from wbtools.db.generic import WBGenericDBManager
 from wbtools.db.gene import WBGeneDBManager
 from wbtools.lib.nlp.common import EntityType
-
-
-# A dictionary mapping three-letter amino acids codes onto one-letter
-# amino acid codes
-amino_acid_three_to_one_letter_map = \
-    dict([('ALA','A'),('GLY','G'),('LEU','L'),('MET','M'),\
-     ('PHE','F'),('TRP','W'),('LYS','K'),('GLN','Q'),('GLU','E'),('SER','S'),\
-     ('PRO','P'),('VAL','V'),('ILE','I'),('CYS','C'),('TYR','Y'),('HIS','H'),\
-     ('ARG','R'),('ASN','N'),('ASP','D'),('THR','T'),('XAA','X'),('GLX','Z'),\
-     ('ASX','B'), ('TER', 'X'), ('STP', 'X')])
-
-# A dictionary mapping amino acid names to their one-letter abbreviations
-amino_acid_name_to_one_letter_map = \
-    dict([('ALANINE','A'),('GLYCINE','G'),('LEUCINE','L'),\
-     ('METHIONINE','M'),('PHENYLALANINE','F'),('TRYPTOPHAN','W'),\
-     ('LYSINE','K'),('GLUTAMINE','Q'),('GLUTAMIC ACID','E'),\
-     ('GLUTAMATE','E'),('ASPARTATE','D'),('SERINE','S'),\
-     ('PROLINE','P'),('VALINE','V'),('ISOLEUCINE','I'),('CYSTEINE','C'),\
-     ('TYROSINE','Y'),('HISTIDINE','H'),('ARGININE','R'),\
-     ('ASPARAGINE','N'),('ASPARTIC ACID','D'),('THREONINE','T'), \
-     ('OCHRE', 'X'), ('AMBER', 'X'), ('OPAL', 'X'), ('UMBER', 'X'), \
-     ('STOP', 'X'), ('TERM', 'X'), ('*', '*')])
-     
-class MutationError(Exception):
-        pass
-
-class Mutation(object):
-    """ A base class for storing information about mutations """
-
-    def __init__(self, Position):
-        """ Initalize the object
-
-            Position: the sequence position or start position of the mutation
-                (must be castable to an int)
-        """
-        try:
-            self.__position = int(Position)
-        except ValueError:
-            self.__position = '<See original snippet for number>'
-            # NOTE: commented below lines due to inconsistency in the MF created regex
-            # raise MutationError("Position must be an integer")
-        # if self.__position < 1:
-        #     raise MutationError("Position must be greater than 0")
-
-    def _get_position(self):
-        return self.__position
-    Position = property(_get_position)
-
-    def __str__(self):
-        raise NotImplementedError('Mutation subclasses must override str()')
-
-    def __eq__(self, other):
-        raise NotImplementedError('Mutation subclasses must override ==')
-
-    def __ne__(self, other):
-        raise NotImplementedError('Mutation subclasses must override !-')
-
-    def __hash__(self):
-        raise NotImplementedError('Mutation subclasses must override hash()')
-
-# TODO: very cluttery. Refactor later pls
-# _normalize_residue_identity() fn can be used directly
-class PointMutation(Mutation):
-    """ 
-    A class for storing information about protein point mutations
-    """
-
-    # Define a mapping for residue identity inputs to one-letter
-    # abbreviations. For simplicty of the normalization procedure, a
-    # one-letter to one-letter 'mapping' is also included. This
-    # eliminates the need for an independent validation step, since
-    # any valid identity which is passed in will be a key in this dict,
-    # and it avoids having to analyze which format the input residue
-    # was passed in as.
-    _abbreviation_lookup = dict(zip(list('ABCDEFGHIKLMNPQRSTVWXYZ'),
-                                    list('ABCDEFGHIKLMNPQRSTVWXYZ')))
-    _abbreviation_lookup.update(amino_acid_three_to_one_letter_map)
-    _abbreviation_lookup.update(amino_acid_name_to_one_letter_map)
-
-    def __init__(self, Position, WtResidue, MutResidue, originalMention):
-        """ Initalize the object and call the base class init
-
-            Position: the sequence position or start position of the mutation
-                (castable to an int)
-            WtResidue: the wild-type (pre-mutation) residue identity (a string)
-            MutReside: the mutant (post-mutation) residue identity (a string)
-
-            Residues identities are validated to ensure that they are within
-             the canonical set of amino acid residues are normalized to their
-             one-letter abbreviations.
-        """
-        self.__wt_residue = self._normalize_residue_identity(WtResidue)
-        self.__mut_residue = self._normalize_residue_identity(MutResidue)
-        self.__original_mention = originalMention
-        Mutation.__init__(self, Position=Position)
-        
-        
-    @staticmethod
-    def _get_abbreviation_lookup(self):
-        return self._abbreviation_lookup
-
+   
     
-    def _normalize_residue_identity(self, residue):
-        """ Normalize three-letter and full residue names to their
-             one-letter abbreviations. If a residue identity is passed in
-             which does not fall into the set of canonical amino acids
-             a MutationError is raised.
-
+class MutationFinder:
+    def __init__(self, regex_path):
+        """ 
+        regex_folder should contain the 4 regex files
         """
-        try:
-                # convert residue to its single letter abbreviation after
-                # converting it to uppercase (so lookup is case-insensitive)
-                return self._abbreviation_lookup[residue.upper()]
-        except AttributeError:
-                # if residue cannot be converted to uppercase, it is not a
-                # string, so raise an error
-                raise MutationError('Residue must be a string')
-        except KeyError:
-                # if residue is not a key in self._abbreviation_lookup, it
-                # it is not a standard amino acid residue, so raise an error
-                raise MutationError(\
-                 'Input residue not recognized, must be a standard residue: '\
-                  + residue)
-
-    def _get_wt_residue(self):
-        return self.__wt_residue
-    WtResidue = property(_get_wt_residue)
-
-    def _get_mut_residue(self):
-        return self.__mut_residue
-    MutResidue = property(_get_mut_residue)
-
-    def _get_original_mention(self):
-        self.__original_mention = self.__original_mention.strip()
-        raw_mut = self.__original_mention[1:] if not self.__original_mention[0].isalnum() else self.__original_mention
-        raw_mut = self.__original_mention[:-1] if not self.__original_mention[-1].isalnum() else self.__original_mention
-        return raw_mut.strip()
-    OriginalMention = property(_get_original_mention)
-
-    def __str__(self):
-        """ Return original mutation snippet"""
-        return ''.join([self.__wt_residue,str(self.Position),
-          self.__mut_residue])
-
-    def __eq__(self, other):
-        """ Override ==
-
-            Two PointMutation objects are equal if their Position, WtResidue,
-             and MutResidue values are all equal.
-        """
-        if type(self) == type(other):
-          return self.Position == other.Position and \
-                 self.__wt_residue == other.__wt_residue and \
-                 self.__mut_residue == other.__mut_residue
-        return False
-
-    def __ne__(self,other):
-        """ Override !=
-
-            Two PointMutation obects are not equal if either their Position,
-             WtResidue, or MutResidue values differ.
-        """
-        return not self == other
-
-    def __hash__(self):
-        """ Override hash() """
-        return hash(str(type(self)) + str(self))
-
-#######
-
-class MutationExtractor(object):
-    """ A base class for extracting Mutations from text """
-
-    def __init__(self,ignorecase=True):
-        """ Initialize the object """
-        pass
-
-class MutationFinder(MutationExtractor):
-
-    def __init__(self,regular_expressions):
-        """ Initialize the object
-
-            regular_expressions: an interative set of regular expressions to
-                be applied for extracting mutations. These are in the
-                default python syntax (i.e., perl regular expressions), with
-                the single exception being that regular expressions which
-                should be performed in a case sensitive manner should be
-                followed by the string '[CASE_SENSITIVE]', with no spaces
-                between it and the regular expression.
-
-        """
-        MutationExtractor.__init__(self)
         self._regular_expressions = []
 
-        for regular_expression in regular_expressions:
-            if regular_expression.endswith('[CASE_SENSITIVE]'):
-                self._regular_expressions.append(\
-                 re.compile(regular_expression[:regular_expression.rindex('[')]))
-            else:
-                self._regular_expressions.append(\
-                 re.compile(regular_expression,re.IGNORECASE))
-
-    def _post_process(self,mutations):
-        """ Perform precision increasing post-processing steps
-
-            Remove false positives indicated by:
-              -> mutant and wild-type residues being identical (e.g. A42A)
-        """
-        for mutation in list(mutations):
-            if type(mutation) is PointMutation:
-                if mutation.WtResidue == mutation.MutResidue:
-                    del mutations[mutation]
-
-    def __call__(self,raw_text, span_size=100):
-        """ Extract point mutations mentions from raw_text and return them in a dict
-             raw_text: a string of text
-
-            The result of this method is a dict mapping PointMutation objects to
-             a list of spans where they were identified. Spans are presented in the
-             form of character-offsets in text. If counts for each mention are
-             required instead of spans, apply len() to each value to convert the
-             list of spans to a count.
-
-            Example result:
-             raw_text: 'We constructed A42G and L22G, and crystalized A42G.'
-             result = {PointMutation(42,'A','G'):[(15,19),(46,50)],
-                       PointMutation(22,'L','G'):[(24,28)]}
-
-             Note that the spans won't necessarily be in increasing order, due
-              to the order of processing regular expressions.
-
-
-        """
-        result = {}
-        for regular_expression in self._regular_expressions:
-            for m in regular_expression.finditer(raw_text):
-
+        regular_expressions_file = open(regex_path)
+        for line in regular_expressions_file:
+            line = line.strip()
+            if not line.startswith('#'):
+                if line.endswith('[CASE_SENSITIVE]'):
+                    self._regular_expressions.append(\
+                     re.compile(line[:line.rindex('[')]))
+                else:
+                    self._regular_expressions.append(\
+                     re.compile(line,re.IGNORECASE))
+                
+    def __call__(self, text, span_size=150):
+        final_list = []
+        for regex in self._regular_expressions:    
+            for m in regex.finditer(text):
                 span = min(m.span('wt_res')[0],\
                         m.span('pos')[0],\
                         m.span('mut_res')[0]),\
                     max(m.span('wt_res')[1],\
                         m.span('pos')[1],\
-                        m.span('mut_res')[1])
-
-                current_mutation = \
-                PointMutation(m.group('pos'),m.group('wt_res'),\
-                            m.group('mut_res'), raw_text[span[0]:span[1]+1])
-
-                surrounding_text = raw_text[max(span[0]-span_size, 0):\
-                                      min(len(raw_text), span[1]+span_size)]
-
-                if current_mutation not in result.keys():
-                  result[current_mutation] = surrounding_text
-
-        self._post_process(result)
-        return result
-
-
-def mutation_finder_from_regex_filepath(regular_expression_filepath):
-    """ 
-    Constructs a MutationFinder object using regular expressions in a file
-    """
-    regular_expressions_file = open(regular_expression_filepath)
-
-    regular_expressions = []
-    # Read in and store regular expression, ignoring lines that begin with '#'
-    for line in regular_expressions_file:
-        line = line.strip()
-        if not line.startswith('#'):
-            regular_expressions.append(line)
-
-    return MutationFinder(regular_expressions)
+                        m.span('mut_res')[1])           
+                surrounding_text = (text[max(span[0]-span_size, 0):\
+                                        min(len(text), span[1]+span_size)])
+                raw_mut = (text[span[0]:span[1]+1]).strip()
+                raw_mut = raw_mut[1:] if not raw_mut[0].isalnum() else raw_mut
+                raw_mut = raw_mut[:-1] if not raw_mut[-1].isalnum() else raw_mut
+                final_list.append([raw_mut.strip(), surrounding_text])
+        return final_list
 
 
 class TmVar:
@@ -320,10 +85,7 @@ class TmVar:
         final_list = []
         for regex in self._regular_expressions:       
             for m in regex.finditer(text):
-                span = (m.start(0), m.end(0))
-                # have to post process to remove mutant and wild-type residues being identical (e.g. A42A)
-                # no quick way to do it tho - naive way would be manually edit the regex with WRES and MRES like in MF regex
-                # TODO: manual work time? :(                
+                span = (m.start(0), m.end(0))             
                 surrounding_text = (text[max(span[0]-span_size, 0):\
                                         min(len(text), span[1]+span_size)])
                 raw_mut = (text[span[0]:span[1]]).strip()
@@ -497,7 +259,6 @@ class CustomWBregex:
 # any valid identity which is passed in will be a key in this dict,
 # and it avoids having to analyze which format the input residue
 # was passed in as.
-# little modified from the ones at top of this file
 amino_acid_three_to_one_letter_map = \
     dict([('ALA','A'),('GLY','G'),('LEU','L'),('MET','M'),\
      ('PHE','F'),('TRP','W'),('LYS','K'),('GLN','Q'),('GLU','E'),('SER','S'),\
@@ -515,7 +276,7 @@ amino_acid_name_to_one_letter_map = \
      ('TYROSINE','Y'),('HISTIDINE','H'),('ARGININE','R'),\
      ('ASPARAGINE','N'),('ASPARTIC','D'),('THREONINE','T'), \
      ('OCHRE', 'X'), ('AMBER', 'X'), ('OPAL', 'X'), ('UMBER', 'X'), \
-     ('STOP', 'X'), ('TERM', 'X'), ('*', '*')])
+     ('STOP', 'X'), ('TERM', 'X'), ('*', 'X')])
 
 amino_dict = dict(zip(list('ABCDEFGHIKLMNPQRSTVWXYZ'),
                                 list('ABCDEFGHIKLMNPQRSTVWXYZ')))
