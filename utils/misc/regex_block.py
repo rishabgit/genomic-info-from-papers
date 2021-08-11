@@ -264,7 +264,7 @@ amino_acid_three_to_one_letter_map = \
      ('PHE','F'),('TRP','W'),('LYS','K'),('GLN','Q'),('GLU','E'),('SER','S'),\
      ('PRO','P'),('VAL','V'),('ILE','I'),('CYS','C'),('TYR','Y'),('HIS','H'),\
      ('ARG','R'),('ASN','N'),('ASP','D'),('THR','T'),('XAA','X'),('GLX','Z'),\
-     ('ASX','B'), ('TER', 'X'), ('STP', 'X')])
+     ('ASX','B'), ('TER', '*'), ('STP', '*')])
 
 # A dictionary mapping amino acid names to their one-letter abbreviations
 amino_acid_name_to_one_letter_map = \
@@ -275,8 +275,8 @@ amino_acid_name_to_one_letter_map = \
      ('PROLINE','P'),('VALINE','V'),('ISOLEUCINE','I'),('CYSTEINE','C'),\
      ('TYROSINE','Y'),('HISTIDINE','H'),('ARGININE','R'),\
      ('ASPARAGINE','N'),('ASPARTIC','D'),('THREONINE','T'), \
-     ('OCHRE', 'X'), ('AMBER', 'X'), ('OPAL', 'X'), ('UMBER', 'X'), \
-     ('STOP', 'X'), ('TERM', 'X'), ('*', 'X')])
+     ('OCHRE', 'OCHRE'), ('AMBER', 'AMBER'), ('OPAL', 'OPAL'), ('UMBER', 'UMBER'), \
+     ('STOP', '*'), ('TERM', '*'), ('*', '*')])
 
 amino_dict = dict(zip(list('ABCDEFGHIKLMNPQRSTVWXYZ'),
                                 list('ABCDEFGHIKLMNPQRSTVWXYZ')))
