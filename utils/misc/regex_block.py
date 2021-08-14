@@ -9,6 +9,23 @@ from wbtools.lib.nlp.common import EntityType
    
     
 class MutationFinder:
+    '''
+    Extract mutations using modified MutationFinder regular expressions.
+
+    ...
+
+    Attributes
+    ----------
+    regex_folder : str
+        should contain the modified MutationFinder regex file - seth_modified.txt
+
+    Methods - 
+    -------
+    __call__(text)
+        extracts mutation from the text string  
+        
+    '''
+    
     def __init__(self, regex_path):
         """ 
         regex_folder should contain the 4 regex files
@@ -46,6 +63,24 @@ class MutationFinder:
 
 
 class TmVar:
+    '''
+    Extract mutations using tmVar regular expressions.
+
+    ...
+
+    Attributes
+    ----------
+    regex_folder : str
+        should contain the 4 tmVar regex files - 
+        MF.RegEx.2.txt, SNP.RegEx.txt, ProteinMutation.RegEx.txt, DNAMutation.RegEx.txt
+
+
+    Methods - 
+    -------
+    __call__(text)
+        extracts mutation from the text string  
+        
+    '''
     def __init__(self, regex_folder):
         """ 
         regex_folder should contain the 4 regex files
@@ -122,7 +157,33 @@ class BOWdictionary:
     
     
 class CustomWBregex:
-    def __init__(self, db_config, extra_regex=False,locus_only=False, folder_path='data/gsoc/wbtools'):
+    '''
+    Additional set of regular expressions developed after studying the manually curated remarks. 
+
+    ...
+
+    Attributes
+    ----------
+    db_config : configparser object
+        contains credentials to access wbtools and textpresso api
+    extra_regex : bool
+        compiles regex to required in following methods -  var_and_gene_close() and get_genes()
+    locus_only : bool
+        compiles only the regex which can filter protein mutations with locus and can be easily normalized 
+    folder_path : str
+        path to store the gene and variant names extracted from wbtools in npy file 
+
+    Methods 
+    -------
+    __call__(text)
+        extract mutation from the text string  
+    var_and_gene_close(text)
+        extract var and gene mentions whenever they're close to each other in the text string  
+    get_genes(text)
+        extract genes from the text string  
+        
+    '''
+    def __init__(self, db_config, extra_regex=False, locus_only=False, folder_path='data/gsoc/wbtools'):
         
         if not set(os.listdir(folder_path)) >= set(['wb_alleles_variations.npy', 'wb_allele_designations.npy', 'all_gene_names.npy']):
 
@@ -276,7 +337,7 @@ amino_acid_name_to_one_letter_map = \
      ('TYROSINE','Y'),('HISTIDINE','H'),('ARGININE','R'),\
      ('ASPARAGINE','N'),('ASPARTIC','D'),('THREONINE','T'), \
      ('OCHRE', 'OCHRE'), ('AMBER', 'AMBER'), ('OPAL', 'OPAL'), ('UMBER', 'UMBER'), \
-     ('STOP', '*'), ('TERM', '*'), ('*', '*')])
+     ('STOP', 'X'), ('TERM', 'X'), ('*', 'X')])
 
 amino_dict = dict(zip(list('ABCDEFGHIKLMNPQRSTVWXYZ'),
                                 list('ABCDEFGHIKLMNPQRSTVWXYZ')))
