@@ -1,0 +1,70 @@
+,"You should annotate the variant with this term","If you spot this in the text",
+,,,
+"Relevant SO sub-branch","SO_ID","SO term name","SO_term definition"
+"sequence_alteration (SO:0001059)","SO:1000005","complex substitution","When no simple or well defined DNA mutation event describes the observed DNA change, the keyword \""complex\"" should be used. Usually there are multiple equally plausible explanations for the change."
+"sequence_alteration (SO:0001059)","SO:0000159","deletion","The point at which one or more contiguous nucleotides were excised."
+"chromosome_structure_variation (SO:1000183)","SO:1000029","chromosomal_deletion","An incomplete chromosome."
+"sequence_alteration (SO:0001059)","SO:0000667","insertion","An insertion that derives from another organism, via the use of recombinant DNA technology.
+"
+"sequence_alteration (SO:0001059)","SO:1000036","inversion","A continuous nucleotide sequence is inverted in the same position."
+"sequence_alteration (SO:0001059)","SO:1000173","tandem_duplication","A duplication consisting of 2 identical adjacent regions."
+"structural_variant (SO:0001537)","SO:0001587","stop gained","A sequence variant whereby at least one base of a codon is changed, resulting in a premature stop codon, leading to a shortened transcript."
+"structural_variant (SO:0001537)","SO:0001589","frameshift variant","A sequence variant which causes a disruption of the translational reading frame, because the number of nucleotides inserted or deleted is not a multiple of three."
+,,,
+"sequence_alteration (SO:0001059)","SO:1000032","delin indel","A sequence alteration which included an insertion and a deletion, affecting 2 or more bases."
+"sequence_alteration (SO:0001059)","SO:1000035","duplication","An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome."
+"sequence_alteration (SO:0001059)","SO:0000667","insertion","The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence."
+"sequence_alteration (SO:0001059)","SO:0001218","transgenic_insertion ","An insertion that derives from another organism, via the use of recombinant DNA technology.
+"
+"sequence_alteration (SO:0001059)","SO:0001837","mobile_element_insertion","A kind of insertion where the inserted sequence is a mobile element."
+"sequence_alteration (SO:0001059)","SO:0002007","MNV","An MNV is a multiple nucleotide variant (substitution) in which the inserted sequence is the same length as the replaced sequence."
+"sequence_alteration (SO:0001059)","SO:1000008","point mutation","A single nucleotide change which has occurred at the same position of a corresponding nucleotide in a reference sequence."
+"sequence_alteration (SO:0001059)","SO:0000694","SNP","SNPs are single base pair positions in genomic DNA at which different sequence alternatives exist in normal individuals in some population(s), wherein the least frequent variant has an abundance of 1% or greater."
+"sequence_alteration (SO:0001059)","SO:0000199","translocation","A region of nucleotide sequence that has translocated to a new position. The observed adjacency of two previously separated regions."
+"structural_variant (SO:0001537)","SO:0002162","short_tandem_repeat_expansion","A short tandem repeat variant containing more repeat units than the reference sequence."
+,,,
+,,,
+,,,
+"sequence_alteration (SO:0001059)","n/a","sequence alteration","n/a"
+"sequence_alteration (SO:0001059)","SO:0001059","sequence alteration","A sequence_alteration is a sequence_feature whose extent is the deviation from another sequence."
+,,,
+,,,
+,,,
+,,,
+"chromosome_structure_variation (SO:1000183)","SO:0000550","aneuploid_chromosome","A chromosome structural variation whereby either a chromosome exists in addition to the normal chromosome complement or is lacking."
+"chromosome_structure_variation (SO:1000183)","SO:1000136","autosynaptic_chromosome","An autosynaptic chromosome is the aneuploid product of recombination between a pericentric inversion and a cytologically wild-type chromosome.[ PubMed:6804304 ]"
+"chromosome_structure_variation (SO:1000183)","SO:1000029","chromosomal_deletion","An incomplete chromosome."
+"chromosome_structure_variation (SO:1000183)","SO:1000037","chromosomal_duplication","An extra chromosome."
+"chromosome_structure_variation (SO:1000183)","SO:1000030","chromosomal_inversion","An interchromosomal mutation where a region of the chromosome is inverted with respect to wild type."
+"chromosome_structure_variation (SO:1000183)
+sequence_alteration (SO:0001059)","SO:1000044","chromosomal_translocation","A chromosomal mutation. Rearrangements that alter the pairing of telomeres are classified as translocations."
+"chromosome_structure_variation (SO:1000183)","SO:0000453","chromosomal_transposition","A chromosome structure variant whereby a region of a chromosome has been transferred to another position. Among interchromosomal rearrangements, the term transposition is reserved for that class in which the telomeres of the chromosomes involved are coupled (that is to say, form the two ends of a single DNA molecule) as in wild-type."
+"chromosome_structure_variation (SO:1000183)","SO:1000042","compound_chromosome","A chromosome structure variant where a monocentric element is caused by the fusion of two chromosome arms."
+"chromosome_structure_variation (SO:1000183)","SO:0000065","free_chromosome_arm ","A chromosome structure variation whereby an arm exists as an individual chromosome element."
+"chromosome_structure_variation (SO:1000183)","SO:1000155 ","interchromosomal_transposition	","A chromosome structure variation whereby a transposition occurred between chromosomes.
+"
+"chromosome_structure_variation (SO:1000183)","SO:1000038","intrachromosomal_duplication","A duplication that occurred within a chromosome."
+"chromosome_structure_variation (SO:1000183)","SO:1000045","ring_chromosome","A ring chromosome is a chromosome whose arms have fused together to form a ring, often with the loss of the ends of the chromosome."
+"structural_variant (SO:0001537)","SO:0001537","structural variant","A sequence variant that changes one or more sequence features."
+"structural_variant (SO:0001537)","SO:0001564","gene variant","A sequence variant where the structure of the gene is changed."
+"structural_variant (SO:0001537)","SO:0001566","regulatory region variant","A sequence variant located within a regulatory region."
+"structural_variant (SO:0001537)","SO:0001568","splicing variant","A sequence variant that changes the process of splicing."
+"structural_variant (SO:0001537)","SO:0001583","missense variant","A sequence variant, that changes one or more bases, resulting in a different amino acid sequence but where the length is preserved."
+"structural_variant (SO:0001537)","SO:0001592","minus 1 frameshift variant","A sequence variant which causes a disruption of the translational reading frame, by shifting one base ahead."
+"structural_variant (SO:0001537)","SO:0001593","minus 2 frameshift variant","(null)"
+"structural_variant (SO:0001537)","SO:0001604","amino acid deletion","A sequence variant within a CDS resulting in the loss of an amino acid from the resulting polypeptide."
+"structural_variant (SO:0001537)","SO:0001605","amino acid insertion","A sequence variant within a CDS resulting in the gain of an amino acid to the resulting polypeptide."
+"structural_variant (SO:0001537)","SO:0001617","polypeptide truncation","A sequence variant of the CD that causes a truncation of the resulting polypeptide."
+"structural_variant (SO:0001537)","SO:0001650","inframe variant","A sequence variant which does not cause a disruption of the translational reading frame."
+"structural_variant (SO:0001537)","SO:0001821","inframe insertion","An inframe non synonymous variant that inserts bases into in the coding sequence."
+"structural_variant (SO:0001537)","SO:0001822","inframe deletion","An inframe non synonymous variant that deletes bases from the coding sequence."
+"structural_variant (SO:0001537)","SO:0001823","conservative inframe insertion","An inframe increase in cds length that inserts one or more codons into the coding sequence between existing codons."
+"structural_variant (SO:0001537)","SO:0001879","feature ablation","A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features."
+"structural_variant (SO:0001537)","SO:0001878","feature variant","A sequence variant that falls entirely or partially within a genomic feature."
+"structural_variant (SO:0001537)","SO:0001906","feature truncation","A sequence variant that causes the reduction of a genomic feature, with regard to the reference sequence."
+"structural_variant (SO:0001537)","SO:0001907","feature elongation","A sequence variant that causes the extension of a genomic feature, with regard to the reference sequence."
+"structural_variant (SO:0001537)","SO:0001908","internal feature elongation","A sequence variant that causes the extension of a genomic feature from within the feature rather than from the terminus of the feature, with regard to the reference sequence."
+"structural_variant (SO:0001537)","SO:0001909","frameshift elongation","A frameshift variant that causes the translational reading frame to be extended relative to the reference feature."
+"structural_variant (SO:0001537)","SO:0001910","frameshift truncation","A frameshift variant that causes the translational reading frame to be shortened relative to the reference feature."
+"structural_variant (SO:0001537)","SO:0002012","start lost","A codon variant that changes at least one base of the canonical start codon."
+"structural_variant (SO:0001537)","SO:0001017","silent mutation","A sequence variant that does not affect protein function. Silent mutations may occur in genic ( CDS, UTR, intron etc) and intergenic regions. Silent mutations may have affects on processes such as splicing and regulation."
