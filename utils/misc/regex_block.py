@@ -265,7 +265,7 @@ class CustomWBregex:
             # repeating same set of regex is definitely not efficient
             # self._gene_var_regex and the regex below can be easily combined
             # TODO: combine
-            OPENING_CLOSING_REGEXES = [r'((?:^|[\s\(\[\'"/,;\-])', r'(?:^|[\s\(\[\'"/,;\-]))']
+            OPENING_CLOSING_REGEXES = [r'(?:^|[^0-9A-Za-z])(', r')(?:^|[^0-9A-Za-z])']
             all_genes = OPENING_CLOSING_REGEXES[0] + '|'.join(all_genes_list) + OPENING_CLOSING_REGEXES[1]
             self._all_genes = [re.compile(r,re.IGNORECASE) for r in [all_genes]]
             

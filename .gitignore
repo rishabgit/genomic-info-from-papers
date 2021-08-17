@@ -31,3 +31,4 @@ data/model_output/processed/final_A.csv
 data/model_output/processed/final_B.csv
 data/model_output/processed/temp_paper_mut_count.json
 data/model_output/processed/temp_paper_wbgene_count.json
+*.cfg
