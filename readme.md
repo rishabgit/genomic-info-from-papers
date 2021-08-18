@@ -1,4 +1,5 @@
-# Extract genomic data from papers. Made during GSoC 21 for [WormBase](https://wormbase.org/)
+# Extract genomic data from papers.   
+Made during [GSoC 21](https://summerofcode.withgoogle.com/projects/#4837497529434112) for [WormBase](https://wormbase.org/)   
   
 ![Pipeline figure](https://github.com/rishabgit/genomic-info-from-papers/blob/main/utils/misc/fig.jpg?raw=true)
   
@@ -43,10 +44,13 @@ More additional data which will help curators in final verification.
 Faster and leaner.  
 1. Faster extraction: Mutation extraction in notebook 2 takes a tremendously long time - almost >1 hour for a single paper. This is mainly due to the big number of regular expressions used and while they can't be switched off, there might be a smarter way of doing it.
 2. Leaner storage: Some of the data structure choices made in this project are a little questionable. While they work fine, it can be better. 
-
-
-
   
+  
+# Mentors  
+This project would not have been possible without their constant help.  
+Magdalena Zarowiecki   
+Paul Davis  
+Valerio Arnaboldi  
   
   
 # References:
