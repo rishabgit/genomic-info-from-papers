@@ -1,6 +1,6 @@
 # Extract genomic data from papers. Made during GSoC 21 for [WormBase](https://wormbase.org/)
   
-![Pipeline figure](https://github.com/rishabgit/genomic-info-from-papers/tree/main/utils/misc/fig.jpg)
+![Pipeline figure](https://github.com/rishabgit/genomic-info-from-papers/blob/main/utils/misc/fig.jpg?raw=true)
   
   
 # Setup:  
