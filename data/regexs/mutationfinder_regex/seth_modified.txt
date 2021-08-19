@@ -23,10 +23,6 @@
 #From here on come the modified pattern from MutationFinder
 # WRESPPOSMRES (single-letter, case sentitive)
 (?:^|[\s\(\[\'"/,;\-])(?P<wt_res>[CISQMNPKDTFAGHLRWVEYBZJX])(?P<pos>[+-]?[1-9][0-9]+(?:\s?[+-]\s?[1-9][0-9]*)?)(?P<mut_res>([CISQMNPKDTFAGHLRWVEYBZJX*]|[Ss]top|[Tt]erm))(?=([.,\s)\]\'":;\-?!/]|$))[CASE_SENSITIVE]
-# WRES(PPOS)MRES (single-letter, case sentitive) - extra added by Rishab
-(?:^|[\s\(\[\'"/,;\-])(?P<wt_res>[CISQMNPKDTFAGHLRWVEYBZJX])\((?P<pos>[+-]?[1-9][0-9]+(?:\s?[+-]\s?[1-9][0-9]*)?)\)(?P<mut_res>([CISQMNPKDTFAGHLRWVEYBZJX*]|[Ss]top|[Tt]erm))(?=([.,\s)\]\'":;\-?!/]|$))[CASE_SENSITIVE]
-# WRES(PPOS)-*>|(in|to|into|for|of|by|with|at)MRES (single-letter, case sentitive) - extra added by Rishab
-(?:^|[\s\(\[\'"/,;\-])(?P<wt_res>[CISQMNPKDTFAGHLRWVEYBZJX])\((?P<pos>[1-9][0-9]*)\)(?: *-*> *| +(in|to|into|for|of|by|with|at) +)(?P<mut_res>[CISQMNPKDTFAGHLRWVEYBZJX])(?=[([.,\s)\]\'":;\-?!/]|$])
 # WRESPPOSMRES
 (?:^|[\s\(\[\'"/,;\-])(?P<wt_res>(?:A(?:LA(?:NINE)?|MBER|RG(?:ININE)?|S(?:P(?:AR(?:T(?:IC ACID|ATE)|AGINE))?|N|X))|MET(?:HIONINE)?|CYS(?:TEINE)?|L(?:EU(?:CINE)?|YS(?:INE)?)|O(?:CHRE|PAL)|I(?:SOLEUCINE|LE)|UMBER|T(?:ER(?:M)?|R(?:P|YPTOPHAN)|HR(?:EONINE)?|YR(?:OSINE)?)|VAL(?:INE)?|P(?:HE(?:NYLALANINE)?|RO(?:LINE)?)|S(?:T(?:P|OP)|ER(?:INE)?)|GL(?:U(?:TAM(?:ATE|I(?:C ACID|NE)))?|N|Y(?:CINE)?|X)|HIS(?:TIDINE)?|XLE))(?P<pos>[1-9][0-9]*)(?P<mut_res>(?:A(?:LA(?:NINE)?|MBER|RG(?:ININE)?|S(?:P(?:AR(?:T(?:IC ACID|ATE)|AGINE))?|N|X))|MET(?:HIONINE)?|CYS(?:TEINE)?|L(?:EU(?:CINE)?|YS(?:INE)?)|O(?:CHRE|PAL)|I(?:SOLEUCINE|LE)|UMBER|T(?:ER(?:M)?|R(?:P|YPTOPHAN)|HR(?:EONINE)?|YR(?:OSINE)?)|VAL(?:INE)?|P(?:HE(?:NYLALANINE)?|RO(?:LINE)?)|S(?:T(?:P|OP)|ER(?:INE)?)|GL(?:U(?:TAM(?:ATE|I(?:C ACID|NE)))?|N|Y(?:CINE)?|X)|HIS(?:TIDINE)?|XLE)|X)(?=([.,\s)\]\'":;\-?!/]|$))
 # WRESPPOS-->MRES

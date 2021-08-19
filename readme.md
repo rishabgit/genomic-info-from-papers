@@ -47,7 +47,7 @@ Faster and leaner.
   
   
 # Mentors  
-This project would not have been possible without their constant help.  
+This project would not have been possible without their support.  
 Magdalena Zarowiecki   
 Paul Davis  
 Valerio Arnaboldi  

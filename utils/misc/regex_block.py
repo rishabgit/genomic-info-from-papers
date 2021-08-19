@@ -243,7 +243,6 @@ class CustomWBregex:
 
         # these regexes were written after manually looking at the curator remarks
         raw_regexs = [\
-            '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX]) *(\(?[1-9][0-9]*\)?)(?: *-*> *| +(in|to|into|for|of|by|with|at))? +(either +)?((an|a) +)?( *NONSENSE +)?(TERM|STOP|AMBER|OCHRE|OPAL|UMBER)',\
             '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX])(?: *-*> *| +(in|to|into|for|of|by|with|at)) +(either +)?((an|a) +)?( *NONSENSE +)?(TERM|STOP|AMBER|OCHRE|OPAL|UMBER)',\
             '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX])(?: *-*> *| +(in|to|into|for|of|by|with|at) +(either +)?((an|a) +)?)( *NONSENSE +)?([CISQMNPKDTFAGHLRWVEYBZJX*])[^0-9A-Za-z].*(flank)',\
             '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX])(?: *-*> *| +(in|to|into|for|of|by|with|at) +(either +)?((an|a) +)?)( *NONSENSE +)?([CISQMNPKDTFAGHLRWVEYBZJX*])[^0-9A-Za-z].*([ACTG]{8,}).*([ACTG]{8,})',\
@@ -252,12 +251,15 @@ class CustomWBregex:
         
         extra_locus_only_regexs = [\
             '(?:^|[\s\(\[\'"/,;\-])([CISQMNPKDTFAGHLRWVEYBZJX]) *(\(?[1-9][0-9]*\)?)(?: *-*> *| +(in|to|into|for|of|by|with|at))? +(either +)?((an|a) +)?( *NONSENSE +)?(TERM|STOP|AMBER|OCHRE|OPAL|UMBER)',\
+            '(?:^|[\s\(\[\'"/,;\-])(?P<wt_res>[CISQMNPKDTFAGHLRWVEYBZJX])\((?P<pos>[+-]?[1-9][0-9]+(?:\s?[+-]\s?[1-9][0-9]*)?)\)(?P<mut_res>([CISQMNPKDTFAGHLRWVEYBZJX*]|[Ss]top|[Tt]erm))(?=([.,\s)\]\'":;\-?!/]|$))',\
+            '(?:^|[\s\(\[\'"/,;\-])(?P<wt_res>[CISQMNPKDTFAGHLRWVEYBZJX])\((?P<pos>[1-9][0-9]*)\)(?: *-*> *| +(in|to|into|for|of|by|with|at) +)(?P<mut_res>[CISQMNPKDTFAGHLRWVEYBZJX])(?=[([.,\s)\]\'":;\-?!/]|$])',\
+            '(?:^|[\s\(\[\'"/,;\-])(?P<wt_res>(?:A(?:LA(?:NINE)?|MBER|RG(?:ININE)?|S(?:P(?:AR(?:T(?:IC ACID|ATE)|AGINE))?|N|X))|MET(?:HIONINE)?|CYS(?:TEINE)?|L(?:EU(?:CINE)?|YS(?:INE)?)|O(?:CHRE|PAL)|I(?:SOLEUCINE|LE)|UMBER|T(?:ER(?:M)?|R(?:P|YPTOPHAN)|HR(?:EONINE)?|YR(?:OSINE)?)|VAL(?:INE)?|P(?:HE(?:NYLALANINE)?|RO(?:LINE)?)|S(?:T(?:P|OP)|ER(?:INE)?)|GL(?:U(?:TAM(?:ATE|I(?:C ACID|NE)))?|N|Y(?:CINE)?|X)|HIS(?:TIDINE)?|XLE))\((?P<pos>[1-9][0-9]*)\)(-*>)(?P<mut_res>(?:A(?:LA(?:NINE)?|MBER|RG(?:ININE)?|S(?:P(?:AR(?:T(?:IC ACID|ATE)|AGINE))?|N|X))|MET(?:HIONINE)?|CYS(?:TEINE)?|L(?:EU(?:CINE)?|YS(?:INE)?)|O(?:CHRE|PAL)|I(?:SOLEUCINE|LE)|UMBER|T(?:ER(?:M)?|R(?:P|YPTOPHAN)|HR(?:EONINE)?|YR(?:OSINE)?)|VAL(?:INE)?|P(?:HE(?:NYLALANINE)?|RO(?:LINE)?)|S(?:T(?:P|OP)|ER(?:INE)?)|GL(?:U(?:TAM(?:ATE|I(?:C ACID|NE)))?|N|Y(?:CINE)?|X)|HIS(?:TIDINE)?|XLE))(?=([.,\s)\]\'":;\-?!/]|$))'
             ]
         
         if locus_only:
             self._regular_expressions = [re.compile(r,re.IGNORECASE) for r in extra_locus_only_regexs]
         else:
-            self._regular_expressions = [re.compile(r,re.IGNORECASE) for r in raw_regexs + variation_regex]
+            self._regular_expressions = [re.compile(r,re.IGNORECASE) for r in raw_regexs + extra_locus_only_regexs + variation_regex]
         
         if extra_regex:
             self._gene_var_regex = [re.compile(r,re.IGNORECASE) for r in gene_var_combo]
