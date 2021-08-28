@@ -23,7 +23,9 @@ Follow the notebooks serially.
 # Results:
 In 100 papers tested (93 were in the manually curated ground truth file), gene-mutation matches were found in 53 papers.   
 Total 2433 matches were present in those 53 papers. And 977 matches were found using this developed pipeline.    
-Cross-checking the matches with ground truth file -  
+TP: 472, FP: 505  
+Precision: 48.3%  
+After manually checking the false positives and updating the ground truth file -  
 TP: 807, FP: 170  
 Precision: 82.59%  
 Not all *FP* are FP. After manual verification of the final output, some were noticed to be true positive which were originally missed during the manual curation.  
