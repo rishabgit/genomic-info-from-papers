@@ -34,3 +34,6 @@ data/model_output/processed/temp_paper_wbgene_count.json
 data/model_output/processed/snippets_4.csv
 data/model_output/*.csv
 datanalanala_binary.csv
+venv/
+.vscode/
+.idea/
