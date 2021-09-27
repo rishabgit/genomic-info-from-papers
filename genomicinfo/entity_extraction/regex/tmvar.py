@@ -1,6 +1,6 @@
 import os
 
-from genomicinfo.model_blocks.regex.regex_extractor import RegexEntityExtractor
+from genomicinfo.entity_extraction.regex.regex_extractor import RegexEntityExtractor
 
 
 class TMVarRegexEntityExtractor(RegexEntityExtractor):

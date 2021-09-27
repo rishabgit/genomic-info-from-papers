@@ -1,7 +1,7 @@
 import re
 from typing import List, Pattern
 
-from genomicinfo.model_blocks.regex.regex_extractor import RegexEntityExtractor, OPENING_CLOSING_REGEXES, DB_VAR_REGEX
+from genomicinfo.entity_extraction.regex.regex_extractor import RegexEntityExtractor, OPENING_CLOSING_REGEXES, DB_VAR_REGEX
 
 
 class WBCustomRegexEntityExtractor(RegexEntityExtractor):

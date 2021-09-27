@@ -3,7 +3,7 @@ import re
 from os import listdir
 from typing import List, Pattern
 
-from genomicinfo.model_blocks.regex.regex_extractor import RegexEntityExtractor
+from genomicinfo.entity_extraction.regex.regex_extractor import RegexEntityExtractor
 
 
 class MutationFinderRegexEntityExtractor(RegexEntityExtractor):

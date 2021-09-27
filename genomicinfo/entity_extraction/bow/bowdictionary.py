@@ -1,7 +1,7 @@
 import re
 from typing import List, Tuple
 
-from genomicinfo.model_blocks.abstract_extractor import AbstractEntityExtractor
+from genomicinfo.entity_extraction.abstract_extractor import AbstractEntityExtractor
 
 
 class BOWdictionary(AbstractEntityExtractor):

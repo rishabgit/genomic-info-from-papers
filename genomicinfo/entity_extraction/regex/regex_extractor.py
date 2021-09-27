@@ -3,7 +3,7 @@ import re
 from os import listdir
 from typing import List, Pattern, Tuple
 
-from genomicinfo.model_blocks.abstract_extractor import AbstractEntityExtractor
+from genomicinfo.entity_extraction.abstract_extractor import AbstractEntityExtractor
 
 
 OPENING_CLOSING_REGEXES = [r'(', r')']

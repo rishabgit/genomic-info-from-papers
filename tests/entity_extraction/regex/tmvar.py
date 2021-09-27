@@ -1,12 +1,12 @@
 import unittest
 
-from genomicinfo.model_blocks.regex.mutfinder import MutationFinderRegexEntityExtractor
+from genomicinfo.entity_extraction.regex.tmvar import TMVarRegexEntityExtractor
 
 
-class TestMutFinderRegexEntityExtractor(unittest.TestCase):
+class TestTMVarRegexEntityExtractor(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.extractor = MutationFinderRegexEntityExtractor()
+        self.extractor = TMVarRegexEntityExtractor()
 
     def test_extract(self):
         ext = self.extractor.extract('Upon reanalyzing the che-1(ot73) sequence we found the molecular lesion to be a D233G change, rather than an earlier frameshift, as previ- ously reported (C hang et al .')
