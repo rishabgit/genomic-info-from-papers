@@ -1,9 +1,14 @@
 import re
+from typing import List, Tuple
+
+from genomicinfo.model_blocks.abstract_extractor import AbstractEntityExtractor
 
 
-class BOWdictionary:
+class BOWdictionary(AbstractEntityExtractor):
+
     def __init__(self):
         # words whose presence would automatically tick sentence posititve without any context
+        super().__init__()
         self.list_of_words = [['substitution', 'downstream', 'deletion', 'frameshift'], ]
 
     @staticmethod
@@ -15,11 +20,11 @@ class BOWdictionary:
         sentence = re.sub('([\W\-_])', r' \1 ', sentence)
         return sentence.split()  # splits by white space
 
-    def __call__(self, text):
+    def extract(self, text: str) -> List[Tuple[str, str]]:
         final_list = []
         for single_list in self.list_of_words:
             word_set = set(single_list)
             phrase_set = set(BOWdictionary.tokenize_string(text))
             if phrase_set >= word_set:
-                final_list.append(['Invalid', text])
+                final_list.append(('Invalid', text))
         return final_list
