@@ -7,8 +7,8 @@ from genomicinfo.entity_extraction.abstract_extractor import AbstractEntityExtra
 class BOWdictionary(AbstractEntityExtractor):
 
     def __init__(self):
-        # words whose presence would automatically tick sentence posititve without any context
         super().__init__()
+        # words whose presence would automatically tick sentence posititve without any context
         self.list_of_words = [['substitution', 'downstream', 'deletion', 'frameshift'], ]
 
     @staticmethod
@@ -26,5 +26,5 @@ class BOWdictionary(AbstractEntityExtractor):
             word_set = set(single_list)
             phrase_set = set(BOWdictionary.tokenize_string(text))
             if phrase_set >= word_set:
-                final_list.append(('Invalid', text))
+                final_list.append((text, text))
         return final_list

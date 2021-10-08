@@ -37,3 +37,5 @@ venv/
 .vscode/
 .idea/
 data/nala/nala_binary.csv
+__pycache__/
+genomicinfo/entity_extraction/ner/saved_models
