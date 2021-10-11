@@ -13,26 +13,26 @@ nltk.download('punkt')
 
 class BERTEntityExtractor(AbstractEntityExtractor):
 
-    def __init__(self):
+    def __init__(self, folder_name: str):
         super().__init__()
         # Load the model
-        self.bert_ner  = self._load_model(os.path.join(os.path.dirname(__file__), "saved_models", "nala"))
+        self.bert_ner  = self._load_model(os.path.join(os.path.dirname(__file__), "saved_models", folder_name))
         # Loading stopwords from nltk 
         self.stop_words = set(nltk.corpus.stopwords.words('english'))
         self.stop_words = [w for w in self.stop_words if len(w) > 1]
 
     @staticmethod
-    def _load_model(model_name_or_path):
-        config = AutoConfig.from_pretrained(model_name_or_path)
-        tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+    def _load_model(model_directory):
+        config = AutoConfig.from_pretrained(model_directory)
+        tokenizer = AutoTokenizer.from_pretrained(model_directory)
         model = AutoModelForTokenClassification.from_pretrained(
-            model_name_or_path,
-            from_tf=bool(".ckpt" in model_name_or_path),
+            model_directory,
+            from_tf=bool(".ckpt" in model_directory),
             config=config,
         )
         return TokenClassificationPipeline(model=model, tokenizer=tokenizer, task='ner', aggregation_strategy='first')
 
-    def extract(self, sentence: str()) -> List[Tuple[str, str]]:
+    def extract(self, sentence: str) -> List[Tuple[str, str]]:
         final_list = []
         try:
             ner_output = self.bert_ner(sentence)

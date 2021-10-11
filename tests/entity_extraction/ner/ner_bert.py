@@ -6,7 +6,8 @@ from genomicinfo.entity_extraction.ner.ner_bert import BERTEntityExtractor
 class TestBERTEntityExtractor(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.extractor = BERTEntityExtractor()
+        folder_name = "nala" 
+        self.extractor = BERTEntityExtractor(folder_name)
 
     def test_extract(self):
         ext = self.extractor.extract('The fact that muta- tions affecting either the ATP or the actin binding sites lead to similar assembly defects suggests that actin-myo- sin interactions are an important part of the assembly pro- cess and that functions of the myosin ATPase are needed for these interactions.')
