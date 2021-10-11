@@ -26,8 +26,7 @@ class RegexEntityExtractor(AbstractEntityExtractor):
         self.get_surrounding_text = extract_surrounding_text
         self.surrounding_text_placeholder = surrounding_text_placeholder
         self.min_mention_length = min_mention_length
-        if regex_files_folder:
-            self._regular_expressions = self._load_regexes(regex_files_folder)
+        self._regular_expressions = self._load_regexes(regex_files_folder)
 
     @staticmethod
     def _load_regexes(regex_files_folder) -> List[Pattern]:
@@ -80,7 +79,7 @@ class RegexEntityExtractor(AbstractEntityExtractor):
     def _get_mention(self, text, mention_begin, mention_end, span_size):
         mention = (text[mention_begin:mention_end]).strip()
         mention = mention[1:] if not mention[0].isalnum() else mention
-        mention = mention[:-1] if not mention[-1].isalnum() else mention
+        mention = mention[:-1] if not mention[-1].isalnum() and mention[-1] != ')' else mention
         mention = mention.strip()
         surrounding_text = (text[max(mention_begin - span_size, 0): min(len(text), mention_end + span_size)])
         return mention, (surrounding_text if self.get_surrounding_text else self.surrounding_text_placeholder)
