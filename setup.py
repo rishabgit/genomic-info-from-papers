@@ -7,7 +7,7 @@ setuptools.setup(
     name="genomicinfo",
     version="0.0.1",
     author="Rishab Mallick",
-    author_email="",
+    author_email="rishabmallick6@gmail.com",
     description="Extract genomic data from scientific articles",
     long_description=long_description,
     long_description_content_type="text/markdown",
