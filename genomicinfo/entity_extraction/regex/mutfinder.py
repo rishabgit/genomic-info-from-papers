@@ -15,13 +15,14 @@ class MutationFinderRegexEntityExtractor(RegexEntityExtractor):
     def _load_regexes(regex_files_folder) -> List[Pattern]:
         regexes = []
         for regex_file in listdir(regex_files_folder):
-            for line in open(os.path.join(regex_files_folder, regex_file)):
-                line = line.strip()
-                if not line.startswith("#"):
-                    if line.endswith('[CASE_SENSITIVE]'):
-                        regexes.append(re.compile(line[:line.rindex('[')]))
-                    else:
-                        regexes.append(re.compile(line, re.IGNORECASE))
+            with open(os.path.join(regex_files_folder, regex_file)) as regex_lines:
+                for line in regex_lines:
+                    line = line.strip()
+                    if not line.startswith("#"):
+                        if line.endswith('[CASE_SENSITIVE]'):
+                            regexes.append(re.compile(line[:line.rindex('[')]))
+                        else:
+                            regexes.append(re.compile(line, re.IGNORECASE))
         return regexes
 
     def extract(self, text: str, span_size: int = 150):

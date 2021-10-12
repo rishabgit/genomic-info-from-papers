@@ -43,8 +43,14 @@ class RegexEntityExtractor(AbstractEntityExtractor):
             a list of regex patterns
 
         """
-        return [re.compile(line.strip()) for regex_file in listdir(regex_files_folder) for line in
-                open(os.path.join(regex_files_folder, regex_file)) if not line.startswith("#")]
+        regexes = []
+
+        for regex_file in listdir(regex_files_folder):
+            with open(os.path.join(regex_files_folder, regex_file)) as regex_lines:
+                for line in regex_lines:
+                    if not line.startswith("#"):
+                        regexes.append(re.compile(line.strip()))
+        return regexes                
 
     def extract(self, text: str, span_size: int = 150) -> List[Tuple[str, str]]:
         """

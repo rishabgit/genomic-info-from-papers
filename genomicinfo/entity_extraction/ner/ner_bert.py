@@ -35,7 +35,7 @@ class BERTEntityExtractor(AbstractEntityExtractor):
     def extract(self, sentence: str) -> List[Tuple[str, str]]:
         final_list = []
         try:
-            ner_output = self.bert_ner(sentence)
+            ner_output = self.bert_ner(sentence, max_length=512, truncation=True)
             for i, grp in enumerate(ner_output):
                 if grp['entity_group'] == 'LABEL_0':
                     mut = grp['word']
