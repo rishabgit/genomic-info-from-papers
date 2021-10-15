@@ -38,3 +38,4 @@ venv/
 data/nala/nala_binary.csv
 __pycache__/
 genomicinfo/entity_extraction/ner/saved_models
+genomicinfo/entity_extraction/ner/training_data
