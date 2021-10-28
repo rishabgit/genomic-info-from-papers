@@ -3,7 +3,9 @@ import unittest
 from genomicinfo.entity_extraction.regex.wb_custom import \
     WBCustomRegexEntityExtractor, \
     WBGeneVarRegexEntityExtractor, \
-    WBGeneRegexGenomicLocExtractor
+    WBGeneRegexGenomicLocExtractor, \
+    GenomeVersionRegexEntityExtractor, \
+    AnnotationVersionRegexEntityExtractor
 
 
 class TestMutFinderRegexEntityExtractor(unittest.TestCase):
@@ -25,6 +27,8 @@ class TestMutFinderRegexEntityExtractor(unittest.TestCase):
         self.custom_locus_only_extractor = WBCustomRegexEntityExtractor(allele_variations, allele_designations, gene_names, locus_only=True)
         self.var_extractor = WBGeneVarRegexEntityExtractor(allele_variations, allele_designations, gene_names)
         self.gene_extractor = WBGeneRegexGenomicLocExtractor(allele_variations, allele_designations, gene_names)
+        self.genome_ver_extractor = GenomeVersionRegexEntityExtractor(allele_variations, allele_designations, gene_names)
+        self.annotation_ver_extractor = AnnotationVersionRegexEntityExtractor(allele_variations, allele_designations, gene_names)
 
     def test_extract(self):
         ext = self.custom_extractor.extract('Table 4. sup-10 mutations Allele Mutation Effect Isolation background Mutagen Loss-of-function mutations n1017 a TGG to TAG W19 Amber sup-10(n983) EMS n1008 a CAA to TAA Q99 Opal sup-10(n983) EMS n2297 b TGG to TGA W139 Ochre sup-9(n1550); sup-18(n1014) EMS n1626 a AAA to TAA K170 Opal sup-10(n983) Gamma n619 c GAG to AAG E88K unc-93(e1500) EMS n240 c GGG to AGG G323R unc-93(e1500) DES n1007 a agAT to aaAT Exon 3 Donor sup-10(n983) EMS n250 c TTgtto TTga Exon 5 Donor unc-93(e1500) Gamma n342 c TTgtto TTga Exon 5 Donor unc-93(e1500) NTG n3558 d 85 bp del Codon 16 Fs unc-93(e1500) UV-TMP n3564 d 99 bp del Codon 34 Fs unc-93(e1500) UV-TMP n183 c 53 bp del, Codon 128 Fs unc-93(e1500) SPO e2127 e Tc1 insertion Codon 103 Fs Wild type SPO n1468 a Tc1 insertion Codon 136 Fs sup-10(n983) SPO Gain-of-function mutations n983 a gf TGG to TAG W322 Amber Wild type EMS ThesequencesofbothDNAstrandsweredeterminedforeachmutant.Forsplicemutations,intronsequenceisrepresentedinlowercase,andexonsequenceinuppercase.EMS,Ethylmethanesulfonate;SPO,spontaneous;UV-TMP,ultraviolet and trimethylpsoralen; NTG, nitrosoguanidine; DES, diethyl sulfate.')
@@ -54,3 +58,8 @@ class TestMutFinderRegexEntityExtractor(unittest.TestCase):
         self.assertTrue(ext[0][0] == 'ceh-39')
         ext = self.gene_extractor.extract('We found six other mutations that introduce stop codons directly in the bar-1 reading frame: de6 (Q25STOP), mu350 (Q143STOP), sy324 (Q304STOP), mu236 (Q320 STOP), de7 (Q320 STOP), and ep479 (W711STOP).')
         self.assertTrue(ext[0][0] == 'bar-1')
+
+        ext = self.genome_ver_extractor.extract('The genome version used in this paper is ce4.')
+        self.assertTrue(ext[0][0] == 'ce4')
+        ext = self.annotation_ver_extractor.extract('When needing to refer to a specific version of the reference genome, it was therefore sufficient (and convenient) to use the WormBase release number that the genome was taken from (e.g. WS128).')
+        self.assertTrue(ext[0][0] == 'WS128')

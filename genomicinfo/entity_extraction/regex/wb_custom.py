@@ -89,3 +89,32 @@ class WBGeneRegexGenomicLocExtractor(WBCustomRegexEntityExtractor):
         return [re.compile(r, re.IGNORECASE) for r in [self.all_genes]]
 
 
+class GenomeVersionRegexEntityExtractor(WBCustomRegexEntityExtractor):
+    def __init__(self, allele_variations: List[str], allele_designations: List[str], gene_names: List[str]):
+        super().__init__(allele_variations=allele_variations, allele_designations=allele_designations,
+                         gene_names=gene_names, extract_surrounding_text=False,
+                         surrounding_text_placeholder="Genome Version")
+
+    def _load_regexes(self, regex_files_folder) -> List[Pattern]:
+        # table 1 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6424801/pdf/nihms-1011867.pdf
+        genome_vers_regex = ['ce2', 'ce4', 'ce6', 'ce8', 'ce10', 'ce11']
+        genome_vers_regex = r'(' + '|'.join(genome_vers_regex) +  r')'
+        genome_vers_regex = r'(?:^|[\s\(\[\'"/,;\-])' + genome_vers_regex
+        return [re.compile(r) for r in [genome_vers_regex]]
+
+
+class AnnotationVersionRegexEntityExtractor(WBCustomRegexEntityExtractor):
+    def __init__(self, allele_variations: List[str], allele_designations: List[str], gene_names: List[str]):
+        super().__init__(allele_variations=allele_variations, allele_designations=allele_designations,
+                         gene_names=gene_names, extract_surrounding_text=False,
+                         surrounding_text_placeholder="Annotation Version")
+
+    def _load_regexes(self, regex_files_folder) -> List[Pattern]:
+        # table 1 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6424801/pdf/nihms-1011867.pdf
+        # and https://wormbase.org//about/release_schedule#0--10
+        annotation_vers_regex = ['WS'+str(x) for x in range(120, 296)]
+        annotation_vers_regex =  r'(' + '|'.join(annotation_vers_regex) +  r')'
+        annotation_vers_regex = r'(?:^|[\s\(\[\'"/,;\-])' + annotation_vers_regex
+        return [re.compile(r) for r in [annotation_vers_regex]]
+
+

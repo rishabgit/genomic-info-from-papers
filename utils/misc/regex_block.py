@@ -240,6 +240,17 @@ class CustomWBregex:
             all_var + r'[^A-Za-z]{0,2}' + all_genes + r'[^A-Za-z]',\
             all_genes + r'[^A-Za-z]{0,2}' + all_var + r'[^A-Za-z]',
             ]
+        
+        # table 1 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6424801/pdf/nihms-1011867.pdf
+        genome_vers = ['ce2', 'ce4', 'ce6', 'ce8', 'ce10', 'ce11']
+        # table 1 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6424801/pdf/nihms-1011867.pdf
+        # and https://wormbase.org//about/release_schedule#0--10
+        annotation_vers = ['WS'+str(x) for x in range(120, 296)]
+        genome_vers = OPENING_CLOSING_REGEXES[0] + '|'.join(genome_vers) + OPENING_CLOSING_REGEXES[1]
+        annotation_vers = OPENING_CLOSING_REGEXES[0] + '|'.join(annotation_vers) + OPENING_CLOSING_REGEXES[1]
+        
+        genome_vers_regex = r'(?:^|[\s\(\[\'"/,;\-])' + genome_vers
+        annotation_vers_regex = r'(?:^|[\s\(\[\'"/,;\-])' + annotation_vers
 
         # these regexes were written after manually looking at the curator remarks
         raw_regexs = [\
@@ -271,7 +282,9 @@ class CustomWBregex:
             all_genes = OPENING_CLOSING_REGEXES[0] + '|'.join(all_genes_list) + OPENING_CLOSING_REGEXES[1]
             self._all_genes = [re.compile(r,re.IGNORECASE) for r in [all_genes]]
             
-
+            self._genome_vers = [re.compile(r) for r in [genome_vers_regex]]
+            self._annotation_vers = [re.compile(r) for r in [annotation_vers_regex]]
+            
             
     def __call__(self, text, span_size=150):
         final_list = []
@@ -286,7 +299,7 @@ class CustomWBregex:
                 final_list.append([raw_mut.strip(), surrounding_text])
 
         return final_list
-
+    
     
     def var_and_gene_close(self, text, span_size=150):
         final_list = []
@@ -312,6 +325,32 @@ class CustomWBregex:
                 raw = raw[:-1] if not raw[-1].isalnum() else raw
                 if len(raw.strip()) > 1:
                     final_list.append([raw.strip(), 'Just gene'])
+        return final_list
+    
+    
+    def get_genome_vers(self, text):
+        final_list = []
+        for regex in self._genome_vers:      
+            for m in regex.finditer(text):
+                span = (m.start(0), m.end(0))    
+                raw = (text[span[0]:span[1]]).strip()
+                raw = raw[1:] if not raw[0].isalnum() else raw
+                raw = raw[:-1] if not raw[-1].isalnum() else raw
+                if len(raw.strip()) > 1:
+                    final_list.append([raw.strip(), 'Genome Version'])
+        return final_list
+    
+    
+    def get_annotation_vers(self, text):
+        final_list = []
+        for regex in self._annotation_vers:      
+            for m in regex.finditer(text):
+                span = (m.start(0), m.end(0))    
+                raw = (text[span[0]:span[1]]).strip()
+                raw = raw[1:] if not raw[0].isalnum() else raw
+                raw = raw[:-1] if not raw[-1].isalnum() else raw
+                if len(raw.strip()) > 1:
+                    final_list.append([raw.strip(), 'Annotation Version'])
         return final_list
     
     
