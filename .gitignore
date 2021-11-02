@@ -20,7 +20,6 @@ data/regexs/tmvar_regex/RegEx.MF
 data/regexs/tmvar_regex/SplitComponent.txt
 utils/all_config.cfg
 models/nala
-data/nala
 data/gsoc/proteinfa/c_elegans.PRJNA13758.WS281.annotations.gff3
 data/wbpapers
 data/id_and_sentence.csv
@@ -33,4 +32,10 @@ data/model_output/processed/temp_paper_wbgene_count.json
 *.cfg
 data/model_output/processed/snippets_4.csv
 data/model_output/*.csv
+venv/
+.vscode/
+.idea/
 data/nala/nala_binary.csv
+__pycache__/
+genomicinfo/entity_extraction/ner/saved_models
+genomicinfo/entity_extraction/ner/training_data
