@@ -14,12 +14,8 @@ from utils.nala.tokenizers import TmVarTokenizer
 from utils.nala.spliters import NLTK_SPLITTER
 from utils.nala.labelers import BIOLabeler
 
-def prepareData():
 
-    # # Download IDP4+ corpus
-    #get_ipython().system('wget https://s3.amazonaws.com/net.tagtog.public/resources/corpora/tagtog_IDP4%2B_anndoc.zip')
-    #get_ipython().system('unzip -qq tagtog_IDP4+_anndoc.zip -d data/nala')
-    #get_ipython().system('rm tagtog_IDP4+_anndoc.zip'
+def prepareData():
 
     MUT_CLASS_ID = 'e_2'
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -74,11 +70,9 @@ def prepareData():
     labeler = BIOLabeler()
     labeler.label(dataset)
 
-    #'''
-    #Run this cell to create file with sentence and label of true if it contains mutation, false if it doesn't.
-    #Used in notebook 2 during testing.
-    #NOTE: Do not run delete_subclass_annotations() above to store mutations of all three kinds - ST, SST and NL
-    #'''
+    # Run this cell to create file with sentence and label of true if it contains mutation, false if it doesn't.
+    # Used in notebook 2 during testing.
+    # NOTE: Do not run delete_subclass_annotations() above to store mutations of all three kinds - ST, SST and NL
 
     final_binary = []
     for i, part in enumerate(dataset.parts()):
@@ -100,10 +94,9 @@ def prepareData():
     print('Sentences count : ', len(final_binary))
 
     data = pd.DataFrame(final_binary[:], columns=["Sentence", "Contains mutation?"])
-    data.to_csv(os.path.join(dir_path,"data/nala/nala_binary.csv"), index=False, encoding='utf-8')
+    data.to_csv(os.path.join(dir_path, "data/nala/nala_binary.csv"), index=False, encoding='utf-8')
 
-
-    dataset.prune_sentences(0.1) # tried with 0.8, no change in NER acc
+    dataset.prune_sentences(0.1)  # tried with 0.8, no change in NER acc
     final = []
     for doc_id, doc in dataset.documents.items():
         for part_id, part in doc.parts.items():
@@ -112,15 +105,12 @@ def prepareData():
                     final.append([token.word, token.original_labels[0].value.split('-')[0]])
                 final.append([])
 
-    #pprint(final)
-
     chunk_size = 10000
     total = len(final)
     devel_thres = math.ceil(total*0.8)
 
     for i in range(math.ceil(len(final)/chunk_size)):
         temp = final[i*chunk_size:(i+1)*chunk_size]
-        #print(len(temp))
 
         if i > math.ceil(len(final)//10000)*0.8:
             file = open(os.path.join(dir_path, "data/nala/devel.txt"), "a", encoding="utf-8")
@@ -139,9 +129,8 @@ def prepareData():
                 ok_to_switch = True
         file.close()
 
-
-    ## # Convert BIO2 text files to JSON
-    ## Deals with [Issue #8698](https://github.com/huggingface/transformers/issues/8698)
+    # Convert BIO2 text files to JSON
+    # Deals with [Issue #8698](https://github.com/huggingface/transformers/issues/8698)
 
     data = []
     with open(os.path.join(dir_path, 'data/nala/devel.txt'), 'r', encoding="utf-8") as f_in:
@@ -162,17 +151,14 @@ def prepareData():
             #         print('Error')
             #         break
             dictionary = {
-                "tokens" : token,
-                "tags" : label,
+                "tokens": token,
+                "tags": label,
             }
             with open(os.path.join(dir_path, "data/nala/devel.json"), "a", encoding="utf-8") as outfile:
                 json.dump(dictionary, outfile)
                 outfile.write('\n')
             token = []
             label = []
-
-    #pprint(token) -> is printing []
-    #pprint(label) -> is printing  []
 
     data = []
     with open(os.path.join(dir_path, 'data/nala/train_dev.txt'), 'r', encoding="utf-8") as f_in:
@@ -193,8 +179,8 @@ def prepareData():
             #         print('Error')
             #         break
             dictionary = {
-                "tokens" : token,
-                "tags" : label,
+                "tokens": token,
+                "tags": label,
             }
             with open(os.path.join(dir_path, "data/nala/train_dev.json"), "a", encoding="utf-8") as outfile:
                 json.dump(dictionary, outfile)
@@ -203,5 +189,5 @@ def prepareData():
             label = []
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     prepareData()
