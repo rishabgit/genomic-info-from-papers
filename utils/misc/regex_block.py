@@ -6,8 +6,8 @@ from pathlib import Path
 from wbtools.db.generic import WBGenericDBManager
 from wbtools.db.gene import WBGeneDBManager
 from wbtools.lib.nlp.common import EntityType
-   
-    
+
+
 class MutationFinder:
     '''
     Extract mutations using modified MutationFinder regular expressions.
@@ -22,10 +22,9 @@ class MutationFinder:
     Methods - 
     -------
     __call__(text)
-        extracts mutation from the text string  
-        
+        extracts mutation from the text string
     '''
-    
+
     def __init__(self, regex_path):
         """ 
         regex_folder should contain the 4 regex files
@@ -42,10 +41,10 @@ class MutationFinder:
                 else:
                     self._regular_expressions.append(\
                      re.compile(line,re.IGNORECASE))
-                
+
     def __call__(self, text, span_size=150):
         final_list = []
-        for regex in self._regular_expressions:    
+        for regex in self._regular_expressions:
             for m in regex.finditer(text):
                 span = min(m.span('wt_res')[0],\
                         m.span('pos')[0],\
