@@ -11,6 +11,8 @@ import platform
 import nltk.data
 import numpy as np
 import pandas as pd
+
+from refine import addNormalizedMutationsColumn
 from regex_wrapper import regex_block
 from settings import setSettings
 from textpresso import textpresso_paper_text, wbtools_paper_text
@@ -261,8 +263,11 @@ def findVariants(settings, ids_to_extract):
 
     # this sheet will contain high number of duplicates - which will get filtered in 3rd notebook
     # columns with asterisk contain data which are useful regardless of whether the sentence has  mutation info
-    temp = pd.DataFrame(temp[:], columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo', 'Mutation', 'Sentence'])
-    temp.to_csv("data/model_output/extracted_snippets_20_50.csv", index=False, encoding='utf-8')
+    dataframe = pd.DataFrame(temp[:], columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo', 'Mutation', 'Sentence'])
+    dataframe.to_csv("data/model_output/extracted_snippets_20_50.csv", index=False, encoding='utf-8')
+
+    # returns the numpy array
+    return temp
 
 
 if __name__ == "__main__":
@@ -270,4 +275,7 @@ if __name__ == "__main__":
 
     # test: papers mentioned the remarks ace file in data/gsoc
     ids_to_extract = np.load('data/top100.npy').tolist()[98:]
-    findVariants(settings, ids_to_extract)
+    variants = findVariants(settings, ids_to_extract)
+    res = addNormalizedMutationsColumn(settings, variants)
+    # new - 'WBPaper ID', 'Method', 'Genes', '*Gene-Variant combo ', 'Mutations', 'Normalized Mutations', 'Sentence'
+    pprint(res.head())
