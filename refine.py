@@ -1,4 +1,4 @@
-from pprint import pprint
+#!/usr/bin/env python
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -43,11 +43,29 @@ def read_WB_gene_and_prot():
     return wb_gene_and_prot
 
 
-def add_normalized_mutations_column(settings, dataFrame):
+def read_strains():
+    strains = Path('data/gsoc/Strains.txt').read_text().split('\n')
+    strains = [r.split('\t') for r in strains][:-1]
+    all_wb_strains = dict()
+    for row in strains:
+        if row[0] not in all_wb_strains.keys():
+            all_wb_strains[row[0]] = []
+        for strain in row[1:]:
+            if len(strain) and strain.lower() not in all_wb_strains[row[0]]:
+                all_wb_strains[row[0]].append(strain.lower())
+    strainsList = [s for row in strains for s in row[1:] if len(s) and not s.isdigit()]
+    return (strainsList, all_wb_strains)
+
+
+def read_variation_types():
+    variation_types = pd.read_csv("data/gsoc/Variation_type.csv").to_numpy()
+    variation_types = [t.replace("_", " ") for t in variation_types[:,2] if type(t)!=float]
+    return variation_types
+
+
+def add_normalized_mutations_column(settings, paper_mut_count, dataFrame):
     data = dataFrame.to_numpy()
-    global paper_mut_count
     resultArray = []
-    # total_count = len(data)
     ner_count = 0
     regex_count = 0
 
@@ -93,17 +111,15 @@ def add_normalized_mutations_column(settings, dataFrame):
     return pd.DataFrame(resultArray[:], columns=['WBPaper ID', 'Method', 'Genes', '*Gene-Variant combo ', 'Mutations', 'Normalized Mutations', 'Sentence'])
 
 
-def add_WBgenes_column(all_wb_genes, data):
+def add_gene_wbid_column(all_wb_genes, paper_wbgene_count, data):
     data = data.to_numpy()
     updated_data = []
-    paper_wbgene_count = {}
 
     for i, row in enumerate(data):
-        if (i+1) % 100 == 0:
-            print(f"{i+1}", end=" ")
+        #if (i+1) % 100 == 0:
+            # print(f"{i+1}", end=" ")
         paper_id = row[0]
         genes = row[2]
-        # sentence = row[-1]
         # checking if nan
         if type(genes) == float:
             col_genes = ''
@@ -128,11 +144,10 @@ def add_WBgenes_column(all_wb_genes, data):
                 col_genes = ''
         updated_data.append([data[i,0], data[i,1], data[i,2], col_genes, data[i,3], data[i,4], data[i,5], data[i,6]])
 
-    return pd.DataFrame(updated_data[:], columns=['WBPaper ID', 'Method', 'Genes', 'WBGenes', '*Gene-Variant combo ', 'Mutations', 'Normalized Mutations', 'Sentence'])
+    return pd.DataFrame(np.array(updated_data), columns=['WBPaper ID', 'Method', 'Genes', 'WBGenes', '*Gene-Variant combo ', 'Mutations', 'Normalized Mutations', 'Sentence'])
 
 
-def create_pair_gene_mutation(dataframe):
-    data = dataframe.to_numpy()
+def add_pair_gene_mutation_columns(data):
     paper_raw_info_compiled = []
     for row in data:
         ppr_id = row[0]
@@ -192,14 +207,14 @@ def add_transcript(paper_raw_info_compiled, all_wb_genes, wb_gene_and_prot):
     return final_sheet
 
 
-def add_warnings(data):
-    global paper_mut_count
-    final_sheet = np.array(data)
+def add_warnings(final_sheet_input, paper_mut_count, paper_wbgene_count, data):
+    final_sheet = np.array(final_sheet_input)
     updated_sheet = []
+
     for i, row in enumerate(final_sheet):
         warnings = []
         paper_id = row[0]
-        wbgene = row[1]
+        # wbgene = row[1]
         mut = row[3]
         sentence = row[-1]
         for ppr_mut, count in paper_mut_count[paper_id].items():
@@ -235,7 +250,7 @@ def add_warnings(data):
 
         unmatched_muts_in_sentence = [m for m in all_muts_in_sentence if m not in all_matched_muts_in_sentence]
         if len(unmatched_muts_in_sentence) >= 2:
-            temp_warn_store = f'Sentence has multiple mutations which did not match:'
+            temp_warn_store = 'Sentence has multiple mutations which did not match:'
             for m in unmatched_muts_in_sentence:
                 temp_warn_store += (f' {m},')
             warnings.append(temp_warn_store)
@@ -258,18 +273,162 @@ def add_warnings(data):
         columns=['WBPaper ID', 'WBGene', 'Gene', 'Mutation', 'Gene-Var combo', 'Transcript', 'Warnings', 'Sentence'])
 
 
+def add_strains(dataframe, strainsList, strainsDict):
+    data = dataframe.to_numpy()
+    OPENING_CLOSING_REGEXES = [r'(?:^|[^0-9A-Za-z])(', r')(?:^|[^0-9A-Za-z])']
+    all_strain = OPENING_CLOSING_REGEXES[0] + '|'.join(strainsList) + OPENING_CLOSING_REGEXES[1]
+    all_strain = [re.compile(r,re.IGNORECASE) for r in [all_strain]]
+    updated_data = []
 
-paper_mut_count = {}
-if __name__ == "__main__":
+    for i, sent in enumerate(data[:, -1]):
+        # if (i+1) % 100 == 0:  # print(f"{i+1}", end=" ")
+        paper_strains = []
+        for regex in all_strain:
+            for m in regex.finditer(sent):
+                span = (m.start(0), m.end(0))
+                raw = (sent[span[0]:span[1]]).strip()
+                raw = raw[1:] if not raw[0].isalnum() else raw
+                raw = raw[:-1] if not raw[-1].isalnum() else raw
+                if len(raw.strip()) > 1 and not raw.strip().isdigit():
+                    paper_strains.append(raw.strip())
+        if paper_strains:
+            paper_strains = list(set(paper_strains))
+            col_wbid = []
+            for strain in paper_strains:
+                for key, value in strainsDict.items():
+                    if strain.lower() in value:
+                        col_wbid.append(key)
+                        break
+            paper_strains = "'" + "', '".join(paper_strains) + "'"
+            if col_wbid:
+                col_wbid = list(set(col_wbid))
+                col_wbid = ", ".join(col_wbid)
+            else:
+                col_wbid = ''
+                # lazy way to deal with bad snippets due to special characters
+                # in the Strains.txt file which are caught in regex
+                paper_strains = ''
+        else:
+            paper_strains = ''
+            col_wbid = ''
+        updated_data.append([data[i,0], data[i,1], data[i,2], col_wbid, paper_strains, data[i,3], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
+    return np.array(updated_data)
+
+
+def add_variation_type_column(data, variation_types):
+    updated_sheet = []
+    for i, row in enumerate(data):
+        sent = row[-1]
+        col_var_type = []
+        for sub in variation_types:
+            if re.search(sub, sent, re.IGNORECASE):
+                col_var_type.append(sub)
+        if col_var_type:
+            col_var_type = list(set(col_var_type))
+            col_var_type = ", ".join(col_var_type)
+        else:
+            col_var_type = ''
+        updated_sheet.append(np.insert(row, -3, col_var_type).tolist())
+    return np.array(updated_sheet)
+
+
+def add_functional_effect_column(data):
+    functional_effect = ['function uncertain', 'transcript function', 'translational product function', \
+        'decreased transcript level', 'increased transcript level', 'decreased transcript stability', \
+        'gain of function', 'dominant negative', 'dominant negativ', 'antimorphic', \
+        'hypermorphic', 'neomorphic', 'conditional activity', 'hypomorphic', 'amorphic', \
+        'repressible', 'misexpressed']
+    common_gen_methods = ['CRISPR', 'ENU', 'EMS']
+    updated_sheet = []
+
+    for i, row in enumerate(data):
+        sent = row[-1]
+        col_functional_effect = []
+        col_gen_method = []
+        for sub in functional_effect:
+            if re.search(sub, sent, re.IGNORECASE):
+                col_functional_effect.append(sub)
+
+        for sub in common_gen_methods:
+            if re.search(sub, sent):
+                col_gen_method.append(sub)
+
+        if col_functional_effect:
+            col_functional_effect = list(set(col_functional_effect))
+            col_functional_effect = ", ".join(col_functional_effect)
+        else:
+            col_functional_effect = ''
+
+        if col_gen_method:
+            col_gen_method = list(set(col_gen_method))
+            col_gen_method = ", ".join(col_gen_method)
+        else:
+            col_gen_method = ''
+        row = np.insert(row, -3, col_functional_effect)
+        row = np.insert(row, -3, col_gen_method)
+        updated_sheet.append(row.tolist())
+    return np.array(updated_sheet)
+
+
+def add_variants(data):
+    OPENING_CLOSING_REGEXES = [r'(?:^|[^0-9A-Za-z])(', r')(?:^|[^0-9A-Za-z])']
+
+    # the allele regex and db idea was stolen from wbtools
+    allele_designations = np.load('data/gsoc/wbtools/wb_allele_designations.npy').astype('U6')
+    alleles_variations = np.load('data/gsoc/wbtools/wb_alleles_variations.npy').astype('U6')
+    DB_VAR_REGEX = r'({designations}|m|p|ts|gf|lf|d|sd|am|cs)([0-9]+)'
+    var_regex_1 = OPENING_CLOSING_REGEXES[0] + DB_VAR_REGEX.format(designations="|".join(allele_designations)) + OPENING_CLOSING_REGEXES[1]
+    all_var = OPENING_CLOSING_REGEXES[0] + '|'.join(alleles_variations) + '|' + var_regex_1 + OPENING_CLOSING_REGEXES[1]
+    all_var = [re.compile(r,re.IGNORECASE) for r in [all_var]]
+    updated_data = []
+
+    for i, sent in enumerate(data[:, -1]):
+        variants = []
+        for regex in all_var:
+            for m in regex.finditer(sent):
+                span = (m.start(0), m.end(0))
+                raw = (sent[span[0]:span[1]]).strip()
+                raw = raw[1:] if not raw[0].isalnum() else raw
+                raw = raw[:-1] if not raw[-1].isalnum() else raw
+                if len(raw.strip()) > 1:
+                    variants.append(raw.strip())
+        if variants:
+            variants = list(set(variants))
+            variants = "'" + "', '".join(variants) + "'"
+        else:
+            variants = ''
+        updated_data.append([data[i,0], data[i,1], data[i,2], data[i,3], data[i,4], variants, data[i,-5], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
+
+    return np.array(updated_data)
+
+
+def refine(dataframe):
+    paper_mut_count = {}
+    paper_wbgene_count = {}
     settings = setSettings()
-
-    data = pd.read_csv("data/model_output/processed/snippets_1.csv")
-    norm = add_normalized_mutations_column(settings, data)
     wb_genes = read_WB_genes()
-    withWBgenes = add_WBgenes_column(wb_genes, norm)
     wb_gene_and_prot = read_WB_gene_and_prot()
-    gene_and_mutation = create_pair_gene_mutation(withWBgenes)
-    with_transcript = add_transcript(
-        gene_and_mutation, wb_genes, wb_gene_and_prot)
-    pprint(with_transcript)
-    #with_warnings = add_warnings(with_transcript)
+    strainsList, strainsDict = read_strains()
+    variation_types = read_variation_types()
+
+    norm = add_normalized_mutations_column(settings, paper_mut_count, dataframe)
+    withWBgenes = add_gene_wbid_column(wb_genes, paper_wbgene_count, norm)
+
+    data = withWBgenes.to_numpy()
+    gene_and_mutation = add_pair_gene_mutation_columns(data)
+    with_transcript = add_transcript(gene_and_mutation, wb_genes, wb_gene_and_prot)
+    with_warnings = add_warnings(with_transcript, paper_mut_count, paper_wbgene_count, data)
+    with_strains = add_strains(with_warnings, strainsList, strainsDict)
+    with_variants = add_variants(with_strains)
+    with_variation_type = add_variation_type_column(
+        with_variants, variation_types)
+    with_functional_effect = add_functional_effect_column(with_variation_type)
+    return pd.DataFrame(with_functional_effect[:], columns=['WBPaper ID', 'WBGene', 'Gene', 'WBStrain', 'Strains', \
+                                               'Variants', 'Mutation', 'Gene-Var combo', 'Variation type', 'Functional effect', \
+                                               'Generation method', 'Transcript', 'Warnings', 'Sentence'])
+
+
+if __name__ == "__main__":
+    data = pd.read_csv("data/model_output/processed/snippets_1.csv")
+    out = refine(data)
+    out.to_csv("out.csv", index=False, encoding='utf-8')
