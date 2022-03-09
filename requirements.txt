@@ -1,8 +1,10 @@
+accelerate==0.3.0
+bs4==0.0.1
+datasets==1.11.0
+gffutils==0.10.1
+nervaluate==0.1.8
+pybedtools==0.9.0
+seqeval==1.2.2
 torch==1.9.0
 transformers==4.9.1
-nervaluate==0.1.8
-accelerate==0.3.0
-seqeval==1.2.2
-datasets==1.11.0
-bs4
 wbtools==1.2.0
