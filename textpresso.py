@@ -92,7 +92,7 @@ def wbtools_get_papers_last_month(settings):
     first_day, last_day = calendar.monthrange(
         year, previous_month)
     query_date = datetime.datetime(
-        today.year, previous_month, last_day)
+        year, previous_month, last_day)
 
     db_name = settings['wb_database']['db_name']
     db_user = settings['wb_database']['db_user']
