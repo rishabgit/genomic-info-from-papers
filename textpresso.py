@@ -1,9 +1,10 @@
+import calendar
+import datetime
 import json
 import os
 import re
 
 import nltk.data
-
 from wbtools.literature.corpus import CorpusManager
 
 
@@ -77,3 +78,39 @@ def wbtools_paper_text(settings, wbpid):
                              load_bib_info=False, load_afp_info=False, load_curation_info=False)
     sentences = cm.get_paper(paper_id).get_text_docs(remove_sections=remove_sections, split_sentences=True)
     return sentences
+
+
+def wbtools_get_papers_last_month(settings):
+    ''' List of paper Ids since the last day of previous month'''
+    today = datetime.datetime.now()
+    if today.month == 1:
+        previous_month = 12
+        year = today.year - 1
+    else:
+        previous_month = today.month-1
+        year = today.year
+    first_day, last_day = calendar.monthrange(
+        year, previous_month)
+    query_date = datetime.datetime(
+        year, previous_month, last_day)
+
+    db_name = settings['wb_database']['db_name']
+    db_user = settings['wb_database']['db_user']
+    db_password = settings['wb_database']['db_password']
+    db_host = settings['wb_database']['db_host']
+    ssh_host = settings['wb_database']['ssh_host']
+    ssh_user = settings['wb_database']['ssh_user']
+    ssh_passwd = settings['wb_database']['ssh_passwd']
+    cm = CorpusManager()
+    cm.load_from_wb_database(
+        db_name=db_name, db_user=db_user, db_password=db_password,
+        db_host=db_host, from_date=query_date,
+        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd)
+
+    return [paper.paper_id for paper in cm.get_all_papers()]
+
+
+if __name__ == "__main__":
+    from settings import setSettings
+    settings = setSettings()
+    print(wbtools_get_papers_last_month(settings['db_config']))
