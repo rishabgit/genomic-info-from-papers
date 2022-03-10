@@ -1,5 +1,5 @@
 import calendar
-import datetime
+from datetime import datetime
 import json
 import os
 import re
@@ -80,18 +80,17 @@ def wbtools_paper_text(settings, wbpid):
     return sentences
 
 
-def wbtools_get_papers_last_month(settings):
+def wbtools_get_papers_last_month(settings, day=datetime.now()):
     ''' List of paper Ids since the last day of previous month'''
-    today = datetime.datetime.now()
-    if today.month == 1:
+    if day.month == 1:
         previous_month = 12
-        year = today.year - 1
+        year = day.year - 1
     else:
-        previous_month = today.month-1
-        year = today.year
+        previous_month = day.month-1
+        year = day.year
     first_day, last_day = calendar.monthrange(
         year, previous_month)
-    query_date = datetime.datetime(
+    query_date = datetime(
         year, previous_month, last_day)
 
     db_name = settings['wb_database']['db_name']
@@ -114,3 +113,5 @@ if __name__ == "__main__":
     from settings import setSettings
     settings = setSettings()
     print(wbtools_get_papers_last_month(settings['db_config']))
+    feb_day = datetime.strptime('2022-02-15', '%Y-%m-%d')
+    print(wbtools_get_papers_last_month(settings['db_config'], day=feb_day))
