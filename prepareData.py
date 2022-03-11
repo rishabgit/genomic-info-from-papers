@@ -117,6 +117,7 @@ def prepareData():
 
         file = open(os.path.join(dir_path, "data/nala/train_dev.txt"), "a", encoding="utf-8")
 
+        ok_to_switch = False
         for index in range(len(temp)):
             if i*chunk_size + index > devel_thres and ok_to_switch:
                 file.close()
