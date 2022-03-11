@@ -8,11 +8,11 @@
 
 - Activate the virtual environment each time:
 
-  `source venv/bin/activave`
+  `source venv/bin/activate`
 
 - Install dependencies:
 
-  `python -r requirements.txt`
+  `pip install -r requirements.txt`
 
 
 ## Train model (only once)
