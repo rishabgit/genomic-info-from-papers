@@ -9,7 +9,7 @@ from textpresso import wbtools_get_papers_last_month
 
 def main():
     settings = setSettings()
-    paperIds = wbtools_get_papers_last_month(settings, day=datetime.now())
+    paperIds = wbtools_get_papers_last_month(settings['db_config'], day=datetime.now())
     variants = findVariants(settings, paperIds)
     df = refine(variants)
     df.to_csv("output.csv", index=False, encoding='utf-8')
