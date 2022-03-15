@@ -74,20 +74,11 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
     for curr_ppr_i, id in enumerate(wbpids):
         # print(f"{curr_ppr_i+1}", end = " ")
         # textpresso_paper_text() also saves the text in flatfiles for future use
-        paper_path = textpresso_paper_text(id, store_ppr_path, token)
-        txt = Path(paper_path).read_text().split('\n')
-        # deals with empty text files with only "0"
-        if len(txt) == 2:
-            if temp_paperid_sentence.size != 0:
-                txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
-                # incase the loaded numpy file didn't have the required paper
-                if len(txt) == 0 and platform.system() != 'Windows':
-                    txt = wbtools_paper_text(settings, id)
-            elif platform.system() != 'Windows':
-                txt = wbtools_paper_text(settings, id)
-
-        for row in txt:
-            if row.find('fifi') != -1:
+        try:
+            paper_path = textpresso_paper_text(id, store_ppr_path, token)
+            txt = Path(paper_path).read_text().split('\n')
+            # deals with empty text files with only "0"
+            if len(txt) == 2:
                 if temp_paperid_sentence.size != 0:
                     txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
                     # incase the loaded numpy file didn't have the required paper
@@ -95,7 +86,20 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
                         txt = wbtools_paper_text(settings, id)
                 elif platform.system() != 'Windows':
                     txt = wbtools_paper_text(settings, id)
-                break
+
+            for row in txt:
+                if row.find('fifi') != -1:
+                    if temp_paperid_sentence.size != 0:
+                        txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
+                        # incase the loaded numpy file didn't have the required paper
+                        if len(txt) == 0 and platform.system() != 'Windows':
+                            txt = wbtools_paper_text(settings, id)
+                    elif platform.system() != 'Windows':
+                        txt = wbtools_paper_text(settings, id)
+                    break
+        except:
+            print(f'Could not download paper {id}')
+            continue
 
         count_total_rows = len(txt)
         for current_i, row in enumerate(txt):
