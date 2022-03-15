@@ -259,10 +259,14 @@ def findVariants(settings, ids_to_extract):
 
     temp = final[2:]  # removing the temporary first row and header
 
-    # this sheet will contain high number of duplicates - which will get filtered in 3rd notebook
-    # columns with asterisk contain data which are useful regardless of whether the sentence has  mutation info
-    temp = pd.DataFrame(temp[:], columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo', 'Mutation', 'Sentence'])
-    temp.to_csv("data/model_output/extracted_snippets_20_50.csv", index=False, encoding='utf-8')
+    # this sheet will contain high number of duplicates
+    # which will get filtered in the refinement process
+    # columns with asterisk contain data which are useful
+    # regardless of whether the sentence has  mutation info
+    return pd.DataFrame(
+        temp[:],
+        columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo',
+                 'Mutation', 'Sentence'])
 
 
 if __name__ == "__main__":
