@@ -2,7 +2,7 @@
 
 ## Install
 
-- Create a virtual environment with Python-3.9 (only once)
+- Create a virtual environment with Python-3.9 (only once):
 
   `python3 -m venv venv`
 
@@ -10,14 +10,14 @@
 
   `source venv/bin/activate`
 
-- Install dependencies:
+- Install dependencies (only once):
 
   `pip install -r requirements.txt`
 
 
 ## Train model (only once)
 
-- Download nltk and related tools, prepare data for training and train model
+- Download nltk and related tools, prepare data for training and train model:
 
   `bash train_model.sh`
 
@@ -45,3 +45,6 @@ With wbtools access credentials
   `python hybrid_extraction.py`
 
 
+## Execution
+
+  `python main.py`
