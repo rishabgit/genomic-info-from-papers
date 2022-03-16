@@ -10,7 +10,7 @@
 
   `source venv/bin/activate`
 
-- Install dependencies:
+- Install dependencies (only once):
 
   `pip install -r requirements.txt`
 
@@ -45,3 +45,6 @@ With wbtools access credentials
   `python hybrid_extraction.py`
 
 
+## Execution
+
+  `python main.py`
