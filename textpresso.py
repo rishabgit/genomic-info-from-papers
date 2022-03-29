@@ -80,8 +80,10 @@ def wbtools_paper_text(settings, wbpid):
     return sentences
 
 
-def wbtools_get_papers_last_month(settings, day=datetime.now()):
+def wbtools_get_papers_last_month(settings, day=None):
     ''' List of paper Ids since the last day of previous month'''
+    if day is None:
+        day = datetime.now()
     if day.month == 1:
         previous_month = 12
         year = day.year - 1
