@@ -1,4 +1,5 @@
 import calendar
+import logging
 from datetime import datetime
 import json
 import os
@@ -6,6 +7,9 @@ import re
 
 import nltk.data
 from wbtools.literature.corpus import CorpusManager
+
+
+logger = logging.getLogger(__name__)
 
 
 def textpresso_paper_text(wbpid, path, token):
@@ -80,10 +84,12 @@ def wbtools_paper_text(settings, wbpid):
     return sentences
 
 
-def wbtools_get_papers_last_month(settings, day=None):
+def wbtools_get_papers_last_month(settings, day=None, max_num_papers: int = None):
     ''' List of paper Ids since the last day of previous month'''
     if day is None:
         day = datetime.now()
+
+    logger.info("getting papers from " + day.strftime("%Y-%m-%d"))
     if day.month == 1:
         previous_month = 12
         year = day.year - 1
@@ -105,8 +111,8 @@ def wbtools_get_papers_last_month(settings, day=None):
     cm = CorpusManager()
     cm.load_from_wb_database(
         db_name=db_name, db_user=db_user, db_password=db_password,
-        db_host=db_host, from_date=query_date,
-        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd)
+        db_host=db_host, from_date=query_date.strftime("%Y-%m-%d"),
+        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd, max_num_papers=max_num_papers)
 
     return [paper.paper_id for paper in cm.get_all_papers()]
 

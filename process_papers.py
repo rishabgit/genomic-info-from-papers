@@ -1,11 +1,14 @@
 import argparse
 import logging
-from datetime import datetime
 
 from hybrid_extraction import findVariants
 from refine import refine
 from settings import setSettings
 from textpresso import wbtools_get_papers_last_month
+from dateutil import parser as date_parser
+
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -25,14 +28,16 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
+    logger.info("init settings")
     settings = setSettings()
+    logger.info("finished init settings")
     if args.paper_ids:
         paper_ids = args.paper_ids
     else:
-        paper_ids = wbtools_get_papers_last_month(settings['db_config'], day=args.from_date)
+        logger.info("getting paper ids from DB")
+        paper_ids = wbtools_get_papers_last_month(settings['db_config'], day=date_parser.parse(args.from_date),
+                                                  max_num_papers=args.max_papers)
     wb_paper_ids = [f'WBPaper{id}' for id in paper_ids]
-    if args.max_papers:
-        wb_paper_ids = wb_paper_ids[0:args.max_papers]
     variants = findVariants(settings, wb_paper_ids)
     df = refine(variants)
     df.to_csv("output.csv", index=False, encoding='utf-8')

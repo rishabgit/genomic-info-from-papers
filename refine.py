@@ -280,38 +280,39 @@ def add_strains(dataframe, strainsList, strainsDict):
     all_strain = [re.compile(r,re.IGNORECASE) for r in [all_strain]]
     updated_data = []
 
-    for i, sent in enumerate(data[:, -1]):
-        # if (i+1) % 100 == 0:  # print(f"{i+1}", end=" ")
-        paper_strains = []
-        for regex in all_strain:
-            for m in regex.finditer(sent):
-                span = (m.start(0), m.end(0))
-                raw = (sent[span[0]:span[1]]).strip()
-                raw = raw[1:] if not raw[0].isalnum() else raw
-                raw = raw[:-1] if not raw[-1].isalnum() else raw
-                if len(raw.strip()) > 1 and not raw.strip().isdigit():
-                    paper_strains.append(raw.strip())
-        if paper_strains:
-            paper_strains = list(set(paper_strains))
-            col_wbid = []
-            for strain in paper_strains:
-                for key, value in strainsDict.items():
-                    if strain.lower() in value:
-                        col_wbid.append(key)
-                        break
-            paper_strains = "'" + "', '".join(paper_strains) + "'"
-            if col_wbid:
-                col_wbid = list(set(col_wbid))
-                col_wbid = ", ".join(col_wbid)
+    if data:
+        for i, sent in enumerate(data[:, -1]):
+            # if (i+1) % 100 == 0:  # print(f"{i+1}", end=" ")
+            paper_strains = []
+            for regex in all_strain:
+                for m in regex.finditer(sent):
+                    span = (m.start(0), m.end(0))
+                    raw = (sent[span[0]:span[1]]).strip()
+                    raw = raw[1:] if not raw[0].isalnum() else raw
+                    raw = raw[:-1] if not raw[-1].isalnum() else raw
+                    if len(raw.strip()) > 1 and not raw.strip().isdigit():
+                        paper_strains.append(raw.strip())
+            if paper_strains:
+                paper_strains = list(set(paper_strains))
+                col_wbid = []
+                for strain in paper_strains:
+                    for key, value in strainsDict.items():
+                        if strain.lower() in value:
+                            col_wbid.append(key)
+                            break
+                paper_strains = "'" + "', '".join(paper_strains) + "'"
+                if col_wbid:
+                    col_wbid = list(set(col_wbid))
+                    col_wbid = ", ".join(col_wbid)
+                else:
+                    col_wbid = ''
+                    # lazy way to deal with bad snippets due to special characters
+                    # in the Strains.txt file which are caught in regex
+                    paper_strains = ''
             else:
-                col_wbid = ''
-                # lazy way to deal with bad snippets due to special characters
-                # in the Strains.txt file which are caught in regex
                 paper_strains = ''
-        else:
-            paper_strains = ''
-            col_wbid = ''
-        updated_data.append([data[i,0], data[i,1], data[i,2], col_wbid, paper_strains, data[i,3], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
+                col_wbid = ''
+            updated_data.append([data[i,0], data[i,1], data[i,2], col_wbid, paper_strains, data[i,3], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
     return np.array(updated_data)
 
 
@@ -382,22 +383,23 @@ def add_variants(data):
     all_var = [re.compile(r,re.IGNORECASE) for r in [all_var]]
     updated_data = []
 
-    for i, sent in enumerate(data[:, -1]):
-        variants = []
-        for regex in all_var:
-            for m in regex.finditer(sent):
-                span = (m.start(0), m.end(0))
-                raw = (sent[span[0]:span[1]]).strip()
-                raw = raw[1:] if not raw[0].isalnum() else raw
-                raw = raw[:-1] if not raw[-1].isalnum() else raw
-                if len(raw.strip()) > 1:
-                    variants.append(raw.strip())
-        if variants:
-            variants = list(set(variants))
-            variants = "'" + "', '".join(variants) + "'"
-        else:
-            variants = ''
-        updated_data.append([data[i,0], data[i,1], data[i,2], data[i,3], data[i,4], variants, data[i,-5], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
+    if data:
+        for i, sent in enumerate(data[:, -1]):
+            variants = []
+            for regex in all_var:
+                for m in regex.finditer(sent):
+                    span = (m.start(0), m.end(0))
+                    raw = (sent[span[0]:span[1]]).strip()
+                    raw = raw[1:] if not raw[0].isalnum() else raw
+                    raw = raw[:-1] if not raw[-1].isalnum() else raw
+                    if len(raw.strip()) > 1:
+                        variants.append(raw.strip())
+            if variants:
+                variants = list(set(variants))
+                variants = "'" + "', '".join(variants) + "'"
+            else:
+                variants = ''
+            updated_data.append([data[i,0], data[i,1], data[i,2], data[i,3], data[i,4], variants, data[i,-5], data[i,-4], data[i,-3], data[i,-2], data[i,-1]])
 
     return np.array(updated_data)
 
@@ -423,9 +425,12 @@ def refine(dataframe):
     with_variation_type = add_variation_type_column(
         with_variants, variation_types)
     with_functional_effect = add_functional_effect_column(with_variation_type)
-    return pd.DataFrame(with_functional_effect[:], columns=['WBPaper ID', 'WBGene', 'Gene', 'WBStrain', 'Strains', \
-                                               'Variants', 'Mutation', 'Gene-Var combo', 'Variation type', 'Functional effect', \
-                                               'Generation method', 'Transcript', 'Warnings', 'Sentence'])
+    out_list = []
+    if with_functional_effect:
+        out_list = with_functional_effect[:]
+    return pd.DataFrame(out_list, columns=['WBPaper ID', 'WBGene', 'Gene', 'WBStrain', 'Strains', 'Variants',
+                                           'Mutation', 'Gene-Var combo', 'Variation type', 'Functional effect',
+                                           'Generation method', 'Transcript', 'Warnings', 'Sentence'])
 
 
 if __name__ == "__main__":

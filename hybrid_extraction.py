@@ -83,9 +83,9 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
                     txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
                     # incase the loaded numpy file didn't have the required paper
                     if len(txt) == 0 and platform.system() != 'Windows':
-                        txt = wbtools_paper_text(settings, id)
+                        txt = wbtools_paper_text(settings['db_config'], id)
                 elif platform.system() != 'Windows':
-                    txt = wbtools_paper_text(settings, id)
+                    txt = wbtools_paper_text(settings['db_config'], id)
 
             for row in txt:
                 if row.find('fifi') != -1:
