@@ -280,7 +280,7 @@ def add_strains(dataframe, strainsList, strainsDict):
     all_strain = [re.compile(r,re.IGNORECASE) for r in [all_strain]]
     updated_data = []
 
-    if data:
+    if data.ndim == 2:
         for i, sent in enumerate(data[:, -1]):
             # if (i+1) % 100 == 0:  # print(f"{i+1}", end=" ")
             paper_strains = []
@@ -383,7 +383,7 @@ def add_variants(data):
     all_var = [re.compile(r,re.IGNORECASE) for r in [all_var]]
     updated_data = []
 
-    if data:
+    if data.ndim == 2:
         for i, sent in enumerate(data[:, -1]):
             variants = []
             for regex in all_var:
@@ -426,7 +426,7 @@ def refine(dataframe):
         with_variants, variation_types)
     with_functional_effect = add_functional_effect_column(with_variation_type)
     out_list = []
-    if with_functional_effect:
+    if with_functional_effect.ndim == 2:
         out_list = with_functional_effect[:]
     return pd.DataFrame(out_list, columns=['WBPaper ID', 'WBGene', 'Gene', 'WBStrain', 'Strains', 'Variants',
                                            'Mutation', 'Gene-Var combo', 'Variation type', 'Functional effect',
