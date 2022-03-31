@@ -38,7 +38,7 @@ def ner_mutations(tokenClassificationPipeline, stop_words, sentence):
     return mutations
 
 
-def get_paper_sentences(corpus_manager: CorpusManager, settings, store_ppr_path):
+def get_paper_sentences(corpus_manager: CorpusManager):
     '''
     Takes WB Paper IDs, returns a list of sentences after filtering
     Arg:
@@ -52,7 +52,6 @@ def get_paper_sentences(corpus_manager: CorpusManager, settings, store_ppr_path)
         e.g. [['WBPaper00002379', 'First sentence'],
         ['WBPaper00002379', 'Second sentence'], ....]
     '''
-    token = settings['db_config']['textpresso']['token']
 
     stop_words = set(nltk.corpus.stopwords.words('english'))
     stop_words = [w for w in stop_words if len(w) > 1]
@@ -129,7 +128,7 @@ def findVariants(settings, corpus_manager: CorpusManager):
     tokenClassificationPipeline = settings['nala_ner']
     stop_words = settings['stop_words']
 
-    paperid_sentence_list = get_paper_sentences(corpus_manager, settings, store_ppr_path='data/wbpapers')
+    paperid_sentence_list = get_paper_sentences(corpus_manager)
 
     # remove duplicates keeping the order
     seen = set()
