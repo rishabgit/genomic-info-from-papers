@@ -68,9 +68,9 @@ def wbtools_paper_text(settings, wbpid):
     db_user = settings['wb_database']['db_user']
     db_password = settings['wb_database']['db_password']
     db_host = settings['wb_database']['db_host']
-    ssh_host = settings['wb_database']['ssh_host']
-    ssh_user = settings['wb_database']['ssh_user']
-    ssh_passwd = settings['wb_database']['ssh_passwd']
+    file_server_host = settings['wb_database']['file_server_host']
+    file_server_user = settings['wb_database']['file_server_user']
+    file_server_passwd = settings['wb_database']['file_server_passwd']
 
     cm = CorpusManager()
     # sectioning might not be always correct, text processing is done separately in the pipeline
@@ -79,7 +79,8 @@ def wbtools_paper_text(settings, wbpid):
     paper_id = wbpid[7:]
     cm.load_from_wb_database(db_name=db_name, db_user=db_user, db_password=db_password,
                              db_host=db_host, paper_ids=[paper_id],
-                             ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd,
+                             file_server_host=file_server_host, file_server_user=file_server_user,
+                             file_server_passwd=file_server_passwd,
                              load_bib_info=False, load_afp_info=False, load_curation_info=False)
     sentences = cm.get_paper(paper_id).get_text_docs(remove_sections=remove_sections, split_sentences=True)
     return sentences
@@ -106,14 +107,15 @@ def wbtools_get_papers_last_month(settings, day=None, max_num_papers: int = None
     db_user = settings['wb_database']['db_user']
     db_password = settings['wb_database']['db_password']
     db_host = settings['wb_database']['db_host']
-    ssh_host = settings['wb_database']['ssh_host']
-    ssh_user = settings['wb_database']['ssh_user']
-    ssh_passwd = settings['wb_database']['ssh_passwd']
+    file_server_host = settings['wb_database']['file_server_host']
+    file_server_user = settings['wb_database']['file_server_user']
+    file_server_passwd = settings['wb_database']['file_server_passwd']
     cm = CorpusManager()
     cm.load_from_wb_database(
         db_name=db_name, db_user=db_user, db_password=db_password,
         db_host=db_host, from_date=query_date.strftime("%Y-%m-%d"),
-        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd, max_num_papers=max_num_papers)
+        file_server_host=file_server_host, file_server_user=file_server_user, file_server_passwd=file_server_passwd,
+        max_num_papers=max_num_papers)
 
     return [paper.paper_id for paper in cm.get_all_papers()]
 
@@ -123,16 +125,16 @@ def wbtools_get_papers(settings, from_date: str, max_num_papers: int, paper_ids:
     db_user = settings['wb_database']['db_user']
     db_password = settings['wb_database']['db_password']
     db_host = settings['wb_database']['db_host']
-    ssh_host = settings['wb_database']['ssh_host']
-    ssh_user = settings['wb_database']['ssh_user']
-    ssh_passwd = settings['wb_database']['ssh_passwd']
+    file_server_host = settings['wb_database']['file_server_host']
+    file_server_user = settings['wb_database']['file_server_user']
+    file_server_passwd = settings['wb_database']['file_server_passwd']
 
     cm = CorpusManager()
     cm.load_from_wb_database(
         db_name=db_name, db_user=db_user, db_password=db_password,
         db_host=db_host, from_date=from_date, paper_ids=paper_ids,
-        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd, max_num_papers=max_num_papers,
-        load_bib_info=False, load_afp_info=False, load_curation_info=False)
+        file_server_host=file_server_host, file_server_user=file_server_user, file_server_passwd=file_server_passwd,
+        max_num_papers=max_num_papers, load_bib_info=False, load_afp_info=False, load_curation_info=False)
     return cm
 
 
