@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import os
 import re
+from typing import List
 
 import nltk.data
 from wbtools.literature.corpus import CorpusManager
@@ -115,6 +116,24 @@ def wbtools_get_papers_last_month(settings, day=None, max_num_papers: int = None
         ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd, max_num_papers=max_num_papers)
 
     return [paper.paper_id for paper in cm.get_all_papers()]
+
+
+def wbtools_get_papers(settings, from_date: str, max_num_papers: int, paper_ids: List[str] = None) -> CorpusManager:
+    db_name = settings['wb_database']['db_name']
+    db_user = settings['wb_database']['db_user']
+    db_password = settings['wb_database']['db_password']
+    db_host = settings['wb_database']['db_host']
+    ssh_host = settings['wb_database']['ssh_host']
+    ssh_user = settings['wb_database']['ssh_user']
+    ssh_passwd = settings['wb_database']['ssh_passwd']
+
+    cm = CorpusManager()
+    cm.load_from_wb_database(
+        db_name=db_name, db_user=db_user, db_password=db_password,
+        db_host=db_host, from_date=from_date, paper_ids=paper_ids,
+        ssh_host=ssh_host, ssh_user=ssh_user, ssh_passwd=ssh_passwd, max_num_papers=max_num_papers,
+        load_bib_info=False, load_afp_info=False, load_curation_info=False)
+    return cm
 
 
 if __name__ == "__main__":

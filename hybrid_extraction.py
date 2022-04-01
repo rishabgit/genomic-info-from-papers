@@ -11,6 +11,8 @@ import platform
 import nltk.data
 import numpy as np
 import pandas as pd
+from wbtools.literature.corpus import CorpusManager
+
 from regex_wrapper import regex_block
 from settings import setSettings
 from textpresso import textpresso_paper_text, wbtools_paper_text
@@ -36,7 +38,7 @@ def ner_mutations(tokenClassificationPipeline, stop_words, sentence):
     return mutations
 
 
-def get_paper_sentences(wbpids, settings, store_ppr_path):
+def get_paper_sentences(corpus_manager: CorpusManager):
     '''
     Takes WB Paper IDs, returns a list of sentences after filtering
     Arg:
@@ -50,7 +52,6 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
         e.g. [['WBPaper00002379', 'First sentence'],
         ['WBPaper00002379', 'Second sentence'], ....]
     '''
-    token = settings['db_config']['textpresso']['token']
 
     stop_words = set(nltk.corpus.stopwords.words('english'))
     stop_words = [w for w in stop_words if len(w) > 1]
@@ -65,42 +66,10 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
     # list of special characters to keep during inference
     # helps with clearing out the bad characters from old papers
     all_special_chars = list(set(all_special_chars))
-
-    temp_paperid_sentence = np.array([])
-    if os.path.isfile('data/id_and_sentence.csv'):
-        temp_paperid_sentence = pd.read_csv("data/id_and_sentence.csv", lineterminator='\n', dtype=str).to_numpy()  # WBPaper ID, Sentence
     paperid_sentence_list = []
 
-    for curr_ppr_i, id in enumerate(wbpids):
-        # print(f"{curr_ppr_i+1}", end = " ")
-        # textpresso_paper_text() also saves the text in flatfiles for future use
-        try:
-            paper_path = textpresso_paper_text(id, store_ppr_path, token)
-            txt = Path(paper_path).read_text().split('\n')
-            # deals with empty text files with only "0"
-            if len(txt) == 2:
-                if temp_paperid_sentence.size != 0:
-                    txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
-                    # incase the loaded numpy file didn't have the required paper
-                    if len(txt) == 0 and platform.system() != 'Windows':
-                        txt = wbtools_paper_text(settings['db_config'], id)
-                elif platform.system() != 'Windows':
-                    txt = wbtools_paper_text(settings['db_config'], id)
-
-            for row in txt:
-                if row.find('fifi') != -1:
-                    if temp_paperid_sentence.size != 0:
-                        txt = temp_paperid_sentence[temp_paperid_sentence[:, 0] == id[7:]][:, 1]
-                        # incase the loaded numpy file didn't have the required paper
-                        if len(txt) == 0 and platform.system() != 'Windows':
-                            txt = wbtools_paper_text(settings, id)
-                    elif platform.system() != 'Windows':
-                        txt = wbtools_paper_text(settings, id)
-                    break
-        except:
-            print(f'Could not download paper {id}')
-            continue
-
+    for paper in corpus_manager.get_all_papers():
+        txt = paper.get_text_docs(split_sentences=True)
         count_total_rows = len(txt)
         for current_i, row in enumerate(txt):
             if (row.lower().find("we thank") == 0 or
@@ -148,7 +117,7 @@ def get_paper_sentences(wbpids, settings, store_ppr_path):
     return paperid_sentence_list[1:]
 
 
-def findVariants(settings, ids_to_extract):
+def findVariants(settings, corpus_manager: CorpusManager):
 
     # Get the paper texts from textpresso API and wbtools
     # How it works:
@@ -159,7 +128,7 @@ def findVariants(settings, ids_to_extract):
     tokenClassificationPipeline = settings['nala_ner']
     stop_words = settings['stop_words']
 
-    paperid_sentence_list = get_paper_sentences(ids_to_extract, settings, store_ppr_path='data/wbpapers')
+    paperid_sentence_list = get_paper_sentences(corpus_manager)
 
     # remove duplicates keeping the order
     seen = set()
@@ -272,10 +241,3 @@ def findVariants(settings, ids_to_extract):
         columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo',
                  'Mutation', 'Sentence'])
 
-
-if __name__ == "__main__":
-    settings = setSettings()
-
-    # test: papers mentioned the remarks ace file in data/gsoc
-    ids_to_extract = np.load('data/top100.npy').tolist()[98:]
-    findVariants(settings, ids_to_extract)

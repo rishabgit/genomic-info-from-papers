@@ -4,7 +4,7 @@ import logging
 from hybrid_extraction import findVariants
 from refine import refine
 from settings import setSettings
-from textpresso import wbtools_get_papers_last_month
+from textpresso import wbtools_get_papers_last_month, wbtools_get_papers
 from dateutil import parser as date_parser
 
 
@@ -31,14 +31,9 @@ def main():
     logger.info("init settings")
     settings = setSettings()
     logger.info("finished init settings")
-    if args.paper_ids:
-        paper_ids = args.paper_ids
-    else:
-        logger.info("getting paper ids from DB")
-        paper_ids = wbtools_get_papers_last_month(settings['db_config'], day=date_parser.parse(args.from_date),
-                                                  max_num_papers=args.max_papers)
-    wb_paper_ids = [f'WBPaper{id}' for id in paper_ids]
-    variants = findVariants(settings, wb_paper_ids)
+
+    cm = wbtools_get_papers(settings['db_config'], from_date=args.from_date, max_num_papers=args.max_papers)
+    variants = findVariants(settings, cm)
     df = refine(variants)
     df.to_csv("output.csv", index=False, encoding='utf-8')
 
