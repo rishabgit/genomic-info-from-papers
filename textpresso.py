@@ -1,66 +1,34 @@
-import calendar
-import logging
-from datetime import datetime
 import json
-import os
-import re
+import requests
 from typing import List
 
-import nltk.data
-from wbtools.literature.corpus import CorpusManager
+import nltk
 
 
-logger = logging.getLogger(__name__)
-
-
-def textpresso_paper_text(wbpid, path, token):
+def textpresso_paper_text(wbpid, token):
+    ''' Takes a wbpid eg WBPaper00056731 and returns the fulltext paper
+        in sentences
     '''
-    This sub takes a wbpid eg WBPaper00056731 and
-    returns the fulltext paper in sentences
-    '''
-    ft = [0]
-    # Check that wbpid is a valid WBPaper
-    if not re.match('WBPaper', wbpid):
-        print(wbpid, "is not a valid WBPaper ID")
-        return ft
-    # Download paper if it doesn't exist
-    fn = path + '/temp/' + wbpid + '.json'
-
-    if os.path.exists(fn) and os.path.getsize(fn) > 16:
-        pass
+    tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    url = 'https://textpressocentral.org:18080/v1/textpresso/api/search_documents'
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json'}
+    body = json.dumps({'token': token,
+                       'query': {'accession': wbpid,
+                                 'type': 'document',
+                                 'corpora': ['C. elegans']},
+                       'include_fulltext': True})
+    response = requests.post(url, data=body, headers=headers, verify=False)
+    if response.status_code == 200:
+        if response.json() is None:
+            return []
+        else:
+            paper = response.json()[0]
+        abstract = tokenizer.tokenize(paper['abstract'])
+        fulltext = tokenizer.tokenize(paper['fulltext'])
+        return abstract + fulltext
     else:
-        com1 = '-o '+fn +'\n-k '+ '\n'+'-d "{\\"token\\":\\"'+ token + '\\", \\"query\\": {\\"accession\\": \\"' + wbpid +'\\", \\"type\\": \\"document\\", \\"corpora\\": [\\"C. elegans\\"]}, \\"include_fulltext\\": true}"'
-        configf= path +'/temp/' + wbpid + '.tmp.config'
-        curlf = open(configf,'w')
-        print (com1, file=curlf)
-        curlf.close()
-        command = 'curl -o '+ fn +' -K '+ configf+' https://textpressocentral.org:18080/v1/textpresso/api/search_documents'
-        os.system(command)
-
-    # Read the paper, and split into sentences
-    if os.path.exists(fn) and os.path.getsize(fn) > 20:
-        # Open our JSON file and load it into python
-        input_file = open(fn)
-        json_array = json.load(input_file)
-        for item in json_array:
-            abs = item["abstract"]
-            fullt = item["fulltext"]
-            tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-            ft = tokenizer.tokenize(abs)
-            ftt = tokenizer.tokenize(fullt)
-            ft = ft + ftt
-    else:
-        # some paper texts are blank for some reason
-        # pipeline uses wbtools to get sentences in such case
-        pass
-
-    outfilen = os.path.join(path, 'text_flatfiles', wbpid+'.txt')
-    outf = open(outfilen, 'w')
-    for sen in ft:
-        sen =str(sen)
-        print(sen, file=outf)
-    outf.close()
-    return outfilen
+        return []
 
 
 def wbtools_paper_text(settings, wbpid):
@@ -120,7 +88,7 @@ def wbtools_get_papers_last_month(settings, day=None, max_num_papers: int = None
     return [paper.paper_id for paper in cm.get_all_papers()]
 
 
-def wbtools_get_papers(settings, from_date: str, max_num_papers: int, paper_ids: List[str] = None) -> CorpusManager:
+def wbtools_get_papers(settings, paper_ids: List[str]):
     db_name = settings['wb_database']['db_name']
     db_user = settings['wb_database']['db_user']
     db_password = settings['wb_database']['db_password']
@@ -132,15 +100,17 @@ def wbtools_get_papers(settings, from_date: str, max_num_papers: int, paper_ids:
     cm = CorpusManager()
     cm.load_from_wb_database(
         db_name=db_name, db_user=db_user, db_password=db_password,
-        db_host=db_host, from_date=from_date, paper_ids=paper_ids,
+        db_host=db_host, paper_ids=paper_ids,
         file_server_host=file_server_host, file_server_user=file_server_user, file_server_passwd=file_server_passwd,
-        max_num_papers=max_num_papers, load_bib_info=False, load_afp_info=False, load_curation_info=False)
+        load_bib_info=False, load_afp_info=False, load_curation_info=False)
     return cm
 
 
 if __name__ == "__main__":
     from settings import setSettings
     settings = setSettings()
-    print(wbtools_get_papers_last_month(settings['db_config']))
-    feb_day = datetime.strptime('2022-02-15', '%Y-%m-%d')
-    print(wbtools_get_papers_last_month(settings['db_config'], day=feb_day))
+    print(textpresso_paper_text('WBPaper00002627', settings['db_config']['textpresso']['token']))
+    # print(wbtools_get_papers_last_month(settings['db_config']))
+    # feb_day = datetime.strptime('2022-02-15', '%Y-%m-%d')
+    # print(wbtools_get_papers_last_month(settings['db_config'], day=feb_day))
+

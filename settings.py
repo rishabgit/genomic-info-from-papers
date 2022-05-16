@@ -1,7 +1,7 @@
 
 import configparser
-import nltk
 
+import nltk
 from transformers import AutoTokenizer, AutoConfig, AutoModelForTokenClassification
 from transformers import TokenClassificationPipeline
 from utils.misc.regex_block import MutationFinder, TmVar, BOWdictionary, CustomWBregex
@@ -11,13 +11,14 @@ def setSettings():
     '''
     Returns a dictionary with the DBconfig, Regex objects and TC pipeline
     '''
-    nltk.download('stopwords')
-    nltk.download('punkt')
+    # nltk.download('stopwords')
+    # nltk.download('punkt')
     settings = {}
 
     db_config = configparser.ConfigParser()
     db_config.read('utils/all_config.cfg')
 
+    #settings['textpresso'] = db_config['textpresso']
     settings['db_config'] = db_config
 
     mf_mut_extract = MutationFinder('data/regexs/mutationfinder_regex/seth_modified.txt')
@@ -46,3 +47,8 @@ def setSettings():
     stop_words = [w for w in stop_words if len(w) > 1]
     settings['stop_words'] = stop_words
     return settings
+
+
+if __name__ == "__main__":
+    settings = setSettings()
+    print(settings['db_config']['textpresso']['token'])

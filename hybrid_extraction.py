@@ -2,20 +2,15 @@
 # coding: utf-8
 
 import json
-from pathlib import Path
 import re
-import os
-import os.path
-import platform
 
+import nltk
 import nltk.data
 import numpy as np
 import pandas as pd
-from wbtools.literature.corpus import CorpusManager
 
 from regex_wrapper import regex_block
-from settings import setSettings
-from textpresso import textpresso_paper_text, wbtools_paper_text
+from textpresso import wbtools_get_papers, textpresso_paper_text
 
 
 def ner_mutations(tokenClassificationPipeline, stop_words, sentence):
@@ -38,7 +33,7 @@ def ner_mutations(tokenClassificationPipeline, stop_words, sentence):
     return mutations
 
 
-def get_paper_sentences(corpus_manager: CorpusManager):
+def get_paper_sentences_with_wbtools(paper_ids, settings):
     '''
     Takes WB Paper IDs, returns a list of sentences after filtering
     Arg:
@@ -53,6 +48,7 @@ def get_paper_sentences(corpus_manager: CorpusManager):
         ['WBPaper00002379', 'Second sentence'], ....]
     '''
 
+    corpus_manager = wbtools_get_papers(settings['db_config'], paper_ids)
     stop_words = set(nltk.corpus.stopwords.words('english'))
     stop_words = [w for w in stop_words if len(w) > 1]
 
@@ -117,18 +113,87 @@ def get_paper_sentences(corpus_manager: CorpusManager):
     return paperid_sentence_list[1:]
 
 
-def findVariants(settings, corpus_manager: CorpusManager):
+def get_paper_sentences_with_TE(wbpids, settings):
+    '''
+    Takes WB Paper IDs, returns a list of sentences after filtering
+    Arg:
+    wbpids - List of wb papers ids
+        e.g. ['WBPaper00002379']
+    settings - Dictionary with db_config properties and texpresso token
+    Returns:
+    paperid_sentence_list: List of paper ID and sentence
+        e.g. [['WBPaper00002379', 'First sentence'],
+        ['WBPaper00002379', 'Second sentence'], ....]
+    '''
+    token = settings['db_config']['textpresso']['token']
 
-    # Get the paper texts from textpresso API and wbtools
-    # How it works:
-    # - First paper ID is searched through textpresso API.
-    # - If the recieved output is blank, then wbtools is used.
+    stop_words = set(nltk.corpus.stopwords.words('english'))
+    stop_words = [w for w in stop_words if len(w) > 1]
+
+    all_special_chars = []
+    with open('data/nala/train_dev.json') as f:
+        for jsonObj in f:
+            nala_json = json.loads(jsonObj)['tokens']
+            for word in nala_json:
+                if not word.isalnum():
+                    all_special_chars.append(word)
+    # list of special characters to keep during inference
+    # helps with clearing out the bad characters from old papers
+    all_special_chars = list(set(all_special_chars))
+    paperid_sentence_list = []
+
+    for curr_ppr_i, id in enumerate(wbpids):
+        txt = textpresso_paper_text(id, token)
+        count_total_rows = len(txt)
+
+        for current_i, row in enumerate(txt):
+            if any([row.lower().find('literature cited') != -1,
+                    row.lower().find('this work was supported') == 0,
+                    row.lower().find('references') == 0,
+                    row.lower().find('we also thank') == 0,
+                    row.lower().find('this research was supported') == 0,
+                    row.lower().find('we acknowledge') == 0,
+                    row.lower().find('acknowledgments') == 0,
+                    row.lower().find('we thank') == 0]):
+                if current_i > count_total_rows/3:
+                    break
+
+            # usually is bad sentence
+            if len(row) < 40 or not any(word in row.lower().split() for word in stop_words):
+                continue
+            # remove sentences with links and email ids
+            if re.search('\S+@\S+\.', row) or re.search('www\.\S+\.', row) or re.search('http.?://', row):
+                continue
+            # filters one word sentences
+            if len(row.split()) == 1:
+                continue
+            # sentences comprised of only single characters
+            # ^ seems to be issue with wbtools extraction pipeline
+            if all(len(word) < 5 for word in row.split()):
+                continue
+            row = re.sub('\( *cid *: *\d+ *\)', ' ', row)
+            # TODO: replace this block with a regex sub
+            temp_row = row
+            for c in temp_row:
+                if (not c.isalnum() and not c == ' ') and c not in all_special_chars:
+                    row = row.replace(c, "")
+
+            paperid_sentence_list.append((id, row))
+    return paperid_sentence_list  # [1:]
+
+
+def findVariants(settings, paper_ids, method):
+    ''' Get the paper text using wbtools '''
+
+    if method == 'wbtools':
+        paperid_sentence_list = get_paper_sentences_with_wbtools(paper_ids, settings)
+    elif method == 'textpresso':
+        paperid_sentence_list = get_paper_sentences_with_TE(paper_ids, settings)
 
     custom_mut_extract = settings['custom_mut_extract']
     tokenClassificationPipeline = settings['nala_ner']
     stop_words = settings['stop_words']
 
-    paperid_sentence_list = get_paper_sentences(corpus_manager)
 
     # remove duplicates keeping the order
     seen = set()
@@ -241,3 +306,10 @@ def findVariants(settings, corpus_manager: CorpusManager):
         columns=['WBPaper ID', 'Method', '* Genes', '* Gene-Variant combo',
                  'Mutation', 'Sentence'])
 
+
+if __name__ == "__main__":
+    from settings import setSettings
+    settings = setSettings()
+    wbpids = ['WBPaper00002627', 'WBPaper00006391']
+    df = findVariants(settings, wbpids, 'textpresso')
+    df.to_csv('variants.csv', index=False)
