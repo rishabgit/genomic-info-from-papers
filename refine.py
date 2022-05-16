@@ -434,6 +434,6 @@ def refine(dataframe):
 
 
 if __name__ == "__main__":
-    data = pd.read_csv("data/model_output/processed/snippets_1.csv")
+    data = pd.read_csv("variants.csv")
     out = refine(data)
-    out.to_csv("out.csv", index=False, encoding='utf-8')
+    out.to_csv("variants-refined.csv", index=False, encoding='utf-8')
