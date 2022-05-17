@@ -11,8 +11,6 @@ def setSettings():
     '''
     Returns a dictionary with the DBconfig, Regex objects and TC pipeline
     '''
-    # nltk.download('stopwords')
-    # nltk.download('punkt')
     settings = {}
 
     db_config = configparser.ConfigParser()
