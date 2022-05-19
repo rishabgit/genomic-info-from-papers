@@ -47,7 +47,6 @@ def get_paper_sentences_with_wbtools(paper_ids, settings):
         e.g. [['WBPaper00002379', 'First sentence'],
         ['WBPaper00002379', 'Second sentence'], ....]
     '''
-
     corpus_manager = wbtools_get_papers(settings['db_config'], paper_ids)
     stop_words = set(nltk.corpus.stopwords.words('english'))
     stop_words = [w for w in stop_words if len(w) > 1]
@@ -99,15 +98,6 @@ def get_paper_sentences_with_wbtools(paper_ids, settings):
                 if (not c.isalnum() and not c == ' ') and c not in all_special_chars:
                     row = row.replace(c, "")
 
-            # fixes bad space between each character of flanking sequence from old papers
-            # Switching this off as it increases the processing time
-            # also affects very small subset of old papers so not worth the extra time
-            flanking_regex = re.compile('([ACTG]( +)){4,}')
-            for m in flanking_regex.finditer(row):
-                span = (m.start(0), m.end(0))
-                span = row[span[0]:span[1]-1]
-                correct_flank = re.sub('([ACTG])( +)', r'\1', row)
-                row = row.replace(span, correct_flank)
             row = 'Line ' + str(current_i) + ': ' + row.strip()
             paperid_sentence_list.append((id, row))
     return paperid_sentence_list[1:]
@@ -311,5 +301,5 @@ if __name__ == "__main__":
     from settings import setSettings
     settings = setSettings()
     wbpids = ['WBPaper00002627', 'WBPaper00006391']
-    df = findVariants(settings, wbpids, 'textpresso')
+    df = findVariants(settings, wbpids, 'wbtools')
     df.to_csv('variants.csv', index=False)
