@@ -405,6 +405,12 @@ def add_variants(data):
 
 
 def refine(dataframe):
+    if len(dataframe) == 0:
+        return pd.DataFrame(
+            columns=['WBPaper ID', 'WBGene', 'Gene', 'WBStrain', 'Strains',
+                     'Variants', 'Mutation', 'Gene-Var combo', 'Variation type',
+                     'Functional effect', 'Generation method', 'Transcript',
+                     'Warnings', 'Sentence'])
     paper_mut_count = {}
     paper_wbgene_count = {}
     settings = setSettings()

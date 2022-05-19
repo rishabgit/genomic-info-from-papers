@@ -3,6 +3,9 @@ import requests
 from typing import List
 
 import nltk
+from wbtools.literature.corpus import CorpusManager
+
+logger = logging.getLogger(__name__)
 
 
 def textpresso_paper_text(wbpid, token):
