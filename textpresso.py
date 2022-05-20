@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 from typing import List
 
