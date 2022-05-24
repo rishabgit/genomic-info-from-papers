@@ -14,6 +14,10 @@ data/gsoc/wbtools/wb_allele_designations.npy
 data/gsoc/common_words.csv
 data/gsoc/common_phrases.csv
 data/gsoc/Remarks_scored.csv
+data/nala/devel.json
+data/nala/devel.txt
+data/nala/train_dev.json
+data/nala/train_dev.txt
 data/regexs/mutationfinder_regex/original.txt
 data/regexs/tmvar_regex/original
 data/regexs/tmvar_regex/RegEx.MF
