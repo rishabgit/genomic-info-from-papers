@@ -24,6 +24,8 @@ def main():
                         help='set the logging level')
     parser.add_argument('-i', '--paper-ids', metavar='paper_ids', dest='paper_ids', type=str,
                         help='text file containing paper ids, one per line')
+    parser.add_argument('-o', '--output_file', metavar='output_file', dest='output_file', type=str,
+                        help='output file path')
     parser.add_argument('-m', '--method', metavar='method', dest='method',  choices=['textpresso', 'wbtools'],
                         help='textpresso or wbtools')
     args = parser.parse_args()
@@ -36,7 +38,7 @@ def main():
     ids = load_ids(args.paper_ids)
     variants = findVariants(settings, ids, args.method)
     df = refine(variants)
-    df.to_csv('output.csv', index=False, encoding='utf-8')
+    df.to_csv(args.output_file, index=False, encoding='utf-8')
 
 
 if __name__ == '__main__':

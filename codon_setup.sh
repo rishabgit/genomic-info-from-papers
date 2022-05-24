@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #BSUB -J train_var_ext
-#BSUB -q production
+#BSUB -q short
 #BSUB -n 1
 #BSUB -M 64000
 #BSUB -R "rusage[mem=64GB]"
