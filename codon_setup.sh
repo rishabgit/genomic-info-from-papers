@@ -3,8 +3,8 @@
 #BSUB -J train_var_ext
 #BSUB -q short
 #BSUB -n 1
-#BSUB -M 64000
-#BSUB -R "rusage[mem=64GB]"
+#BSUB -M 16000
+#BSUB -R "rusage[mem=16GB]"
 #BSUB -o /hps/scratch/flicek/wormbase/var_extraction/Output_%J.out
 #BSUB -e /hps/scratch/flicek/wormbase/var_extraction/Error_%J.err
 
