@@ -15,5 +15,5 @@ export NLTK_DATA="${VAREXTPATH}/data/nltk"
 
 cd "${VAREXTPATH}"
 source venv/bin/activate
-python process_papers.py -i data/top100.txt -o "${VAREXTLOGS}/variants_in_top100.csv"
+python process_papers.py -i data/top100.txt -o "${VAREXTLOGS}/variants_in_top100.csv" -m textpresso
 
