@@ -173,8 +173,9 @@ def get_paper_sentences_with_TE(wbpids, settings):
 
 
 def findVariants(settings, paper_ids, method):
-    ''' Get the paper text using wbtools '''
+    ''' find variants in papers  '''
 
+    paperid_sentence_list = []
     if method == 'wbtools':
         paperid_sentence_list = get_paper_sentences_with_wbtools(paper_ids, settings)
     elif method == 'textpresso':
