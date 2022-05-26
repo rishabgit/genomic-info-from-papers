@@ -3,8 +3,8 @@
 #BSUB -J var_ext_top100
 #BSUB -q short
 #BSUB -n 1
-#BSUB -M 8000
-#BSUB -R "rusage[mem=8GB]"
+#BSUB -M 20000
+#BSUB -R "rusage[mem=20GB]"
 #BSUB -o /hps/scratch/flicek/wormbase/var_extraction/Output_%J.out
 #BSUB -e /hps/scratch/flicek/wormbase/var_extraction/Error_%J.err
 
