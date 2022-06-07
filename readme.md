@@ -55,10 +55,12 @@ Paul Davis
 Valerio Arnaboldi  
   
   
-# References:
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6371299/  
-https://academic.oup.com/bioinformatics/article/33/12/1852/2991428  
-https://academic.oup.com/bioinformatics/article/23/14/1862/188647  
-https://www.ncbi.nlm.nih.gov/research/bionlp/Tools/tmvar/  
-https://arxiv.org/pdf/2101.07450.pdf  
-https://academic.oup.com/bioinformatics/article/36/4/1234/5566506  
+# Citation  
+@article{https://doi.org/10.17912/micropub.biology.000578,  
+  doi = {10.17912/MICROPUB.BIOLOGY.000578},  
+  url = {https://www.micropublication.org/journals/biology/micropub-biology-000578},  
+  author = {Mallick, Rishab and Arnaboldi, Valerio and Davis, Paul and Diamantakis, Stavros and Zarowiecki, Magdalena and Howe, Kevin},  
+  title = {Accelerated variant curation from scientific literature using biomedical text mining},  
+  publisher = {microPublication Biology},  
+  year = {2022}  
+}  
